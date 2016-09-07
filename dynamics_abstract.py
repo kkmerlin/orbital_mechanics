@@ -4,6 +4,7 @@
 """
 from abc import ABCMeta, abstractmethod
 
+
 class DynamicsAbstract(metaclass=ABCMeta):
     """An abstract parent class for orbital dynamics classes.
 
@@ -20,8 +21,76 @@ class DynamicsAbstract(metaclass=ABCMeta):
     _class_string : string
     An abbreviated name for the dynamical system.
 
-    _parameters : dictionary
+    _parameter_list : list
     Parameters specific to the dynamical system.
     """
     @property
-    def _class_
+    def _class_string(self):
+        ...
+
+    @property
+    def _parameter_list(self):
+        ...
+
+    @abstractmethod
+    def __init__(self, parameters):
+        """.
+
+        Instance Members
+        ----------------
+        _parameters : dictionary
+        Parameter names and values.
+        """
+        self._parameters = parameters
+
+    @abstractmethod
+    def __call__(self, T, X):
+        """Evaluate the dynamics at the given times.
+
+        Input
+        -----
+        T : np.matrix
+        An mx1 column matrix of times.
+
+        X : np.matrix
+        An mxn matrix of states.
+
+        Output
+        ------
+        Xdot : np.matrix
+        An mxn matrix of state derivatives
+        """
+        pass
+
+    def __getattr__(self, name):
+        """Allow easy access to parameters.
+
+        Called when dot notation is used to access an element of the set.
+
+        Input
+        -----
+        name : string
+        The argument provided in the dot notation (e.g. name = arg when this
+        expression is used: obj.arg)
+        """
+        return self._parameters[name]
+
+    def __setattr__(self, name, value):
+        """Allow changes to parameters.
+
+        Called when dot notation is used to change an element of the standard
+        element set.
+
+        Input
+        -----
+        name : string
+        The argument provided in the dot notation (e.g. name = arg when this
+        expression is used: obj.arg)
+
+        value : float or list of floats
+        Value to be saved to self.name
+        """
+        if name == '_parameters':
+            super().__setattr__(name, value)
+        else:
+            self._parameters[name] = value
