@@ -14,7 +14,7 @@ class DynamicsAbstract(metaclass=ABCMeta):
 
     Subclasses can be called with inputs (t, X) where t is an mx1 np.matrix and
     X is an mxn np.matrix, with m being the number of time steps and n being
-    the number of states.
+    the number of states. The output is the state derivative history.
 
     Static Members
     --------------
