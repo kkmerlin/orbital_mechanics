@@ -8,46 +8,28 @@ import numpy.matlib as npm
 from .dynamics_abstract import DynamicsAbstract
 
 
-class DynamicsRV2body(DynamicsAbstract):
-    """RV-based 2-body dynamics.
+class DynamicsRV(DynamicsAbstract):
+    """RV dynamics.
 
     Static Members
     -------
     _parameter_list : list
         mu - standard gravitational parameter
+        a_d - DynamicsAbstract subclass
     """
 
-    _class_string = 'RV2body'
+    _class_string = 'DynamicsRV'
 
-    _parameter_list = ['mu']
+    _parameter_list = ['mu', 'a_d']
 
     def __init__(self, arg):
-        """.
-
-        Input
-        -----
-        arg can be:
-            - a 1 element list: [mu]
-            - a 1 element dict, with keys: mu
-
-        Instance Members
-        ----------------
-        _parameters : dict
-        Key-value pairs of the standard elements
-
-        More information in dynamics_abstract.py
-        """
-        size = len(arg)
-
-        try:
-            parameters = {'mu': arg[0]}
-        except KeyError:
-            parameters = arg
-
-        super().__init__(parameters)
+        """."""
+        super().__init__(arg)
 
     def __call__(self, T, X):
         """Evaluate the dynamics at the given times.
+
+        X = [rx ry rz]
 
         See dynamics_abstract.py for more details.
         """
@@ -55,5 +37,8 @@ class DynamicsRV2body(DynamicsAbstract):
         Xnorm = npl.norm(X, 2, 1, True)
         neg_mu_by_r3 = -self.mu / np.power(Xnorm, 3)  # element-wise division
         Neg_mu_by_r3 = (neg_mu_by_r3 * npm.ones((1, 1)))
-        Xdot = np.multiply(Neg_mu_by_r3, X)
+        two_body = np.multiply(Neg_mu_by_r3, X)
+
+        perturbations = self.a_d(T, X)
+        Xdot = two_body + perturbations
         return Xdot

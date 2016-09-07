@@ -4,19 +4,20 @@
 """
 import unittest
 import numpy as np
-from ..dynamics_rv_2body import DynamicsRV2body
+from ..dynamics_rv import DynamicsRV
+from ..perturb_zero import PerturbZero
 
 
 class TestDynamicsRV2body(unittest.TestCase):
-    """Test class for DynamicsAbstract."""
+    """Test class for DynamicsRV."""
 
     def setUp(self):
         """."""
-        self.drv = DynamicsRV2body({'mu': 1.})
+        self.drv = DynamicsRV({'mu': 1., 'a_d': PerturbZero([3])})
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.drv, DynamicsRV2body)
+        self.assertIsInstance(self.drv, DynamicsRV)
 
     def test_getattr(self):
         """."""

@@ -33,15 +33,25 @@ class DynamicsAbstract(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def __init__(self, parameters):
+    def __init__(self, arg):
         """.
+        Input
+        -----
+        arg : list or dict
+        Corresponding to the elements in _parameter_list
 
         Instance Members
         ----------------
         _parameters : dictionary
         Parameter names and values.
         """
-        self._parameters = parameters
+        size = len(arg)
+
+        try:
+            self._parameters = {self._parameter_list[k]: arg[k]
+                                for k in range(size)}
+        except KeyError:
+            self._parameters = arg
 
     @abstractmethod
     def __call__(self, T, X):
