@@ -33,7 +33,7 @@ class DynamicsAbstract(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def __init__(self, arg):
+    def __init__(self, arg=[]):
         """.
         Input
         -----

@@ -39,8 +39,8 @@ class DynamicsCOE(DynamicsAbstract):
         n = npm.power(self.mu / npm.power(a, 3), .5)
 
         shape = X.shape
-        zeros = npm.zeros(shape[0], shape[1]-1)
-        two_body = np.concatenate(zeros, n)
+        zeros = npm.zeros((shape[0], shape[1]-1))
+        two_body = np.concatenate((zeros, n), 1)
 
         perturbations = self.a_d(T, X)
         Xdot = two_body + perturbations

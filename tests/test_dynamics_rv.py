@@ -8,12 +8,12 @@ from ..dynamics_rv import DynamicsRV
 from ..perturb_zero import PerturbZero
 
 
-class TestDynamicsRV2body(unittest.TestCase):
+class TestDynamicsRV(unittest.TestCase):
     """Test class for DynamicsRV."""
 
     def setUp(self):
         """."""
-        self.drv = DynamicsRV({'mu': 1., 'a_d': PerturbZero([3])})
+        self.drv = DynamicsRV({'mu': 1., 'a_d': PerturbZero()})
 
     def test_instantiation(self):
         """."""
