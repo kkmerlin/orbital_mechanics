@@ -46,7 +46,7 @@ class TestLyapunovMEEOptimal(unittest.TestCase):
         U = self.lmo(t, x)
         self.assertEqual(len(U), 3)
 
-    def test_control_example(self):
+    def test_control_coe(self):
         """."""
         X0 = Orbit(OrbCOE({'p': 2., 'e': .1, 'i': .1, 'W': 0., 'w': 0.,
                            'nu': 0.})).mee().list()[:-1]
