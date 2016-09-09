@@ -41,10 +41,7 @@ class DynamicsMEE(DynamicsAbstract):
         f = X[:, 1]
         g = X[:, 2]
         r = p / (1. + np.multiply(f, cL) + np.multiply(g, sL))
-        try:
-            Ldot = np.power(self.mu * p, .5) / np.power(r, 2)
-        except RuntimeWarning:
-            import pdb;pdb.set_trace()
+        Ldot = np.power(self.mu * p, .5) / np.power(r, 2)
 
         shape = X.shape
         zeros = npm.zeros((shape[0], shape[1]-1))

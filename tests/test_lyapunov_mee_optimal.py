@@ -5,7 +5,7 @@
 import unittest
 import numpy as np
 import numpy.matlib as npm
-from ..lyapunov_mee_phase_free import LyapunovMEEPhaseFree
+from ..lyapunov_mee_optimal import LyapunovMEEOptimal
 from ..perturb_zero import PerturbZero
 from ..dynamics_mee import DynamicsMEE
 from ...orbital_mech.orbit import Orbit
@@ -15,26 +15,26 @@ from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 
 
-class TestLyapunovMEEPhaseFree(unittest.TestCase):
-    """Test class for LyapunovMEEPhaseFree."""
+class TestLyapunovMEEOptimal(unittest.TestCase):
+    """Test class for LyapunovMEEOptimal."""
 
     def setUp(self):
         """."""
-        xref = np.matrix([[1., 1., 1., 1., 1.]])
-        self.lepf = LyapunovMEEPhaseFree({'mu': 1., 'xref': xref})
+        xref = np.matrix([[1., 1., 1., 1., 1., 1.]])
+        self.lmo = LyapunovMEEOptimal({'a_t': 1e-6, 'mu': 1., 'xref': xref})
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.lepf, LyapunovMEEPhaseFree)
+        self.assertIsInstance(self.lmo, LyapunovMEEOptimal)
 
     def test_getattr(self):
         """."""
-        self.assertEqual(self.lepf.mu, 1)
+        self.assertEqual(self.lmo.mu, 1)
 
     def test_setattr(self):
         """."""
-        self.lepf.mu = 2.
-        self.assertEqual(self.lepf.mu, 2)
+        self.lmo.mu = 2.
+        self.assertEqual(self.lmo.mu, 2)
 
     def test_control(self):
         """."""
@@ -43,17 +43,18 @@ class TestLyapunovMEEPhaseFree(unittest.TestCase):
                        [8., .5, 1., .1, .1, 0.]])
         t = np.matrix([[0.], [1.], [2.]])
 
-        U = self.lepf(t, x)
+        U = self.lmo(t, x)
         self.assertEqual(len(U), 3)
 
     def test_control_example(self):
         """."""
         X0 = Orbit(OrbCOE({'p': 2., 'e': .1, 'i': .1, 'W': 0., 'w': 0.,
                            'nu': 0.})).mee().list()[:-1]
-        Xref = [X0[0]*1.] + X0[1:-1]
+        Xref = [X0[0]*1.001] + X0[1:]
 
         mu = 1.
-        ly_mee = LyapunovMEEPhaseFree({'mu': mu, 'xref': np.matrix(Xref)})
+        ly_mee = LyapunovMEEOptimal({'mu': mu, 'xref': np.matrix(Xref),
+                                     'a_t': 1e-6})
         dynmee = DynamicsMEE({'mu': mu, 'a_d': ly_mee})
 
         def X_guess_func(t):

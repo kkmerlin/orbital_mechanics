@@ -47,7 +47,10 @@ class GaussLagrangePlanetaryEqns():
             k = x[4]
             L = x[5]
 
-            s = (1. + h**2 + k**2)**.5
+            try:
+                s = (1. + h**2 + k**2)**.5
+            except OverflowError:
+                import pdb;pdb.set_trace()
             sL = sin(L)
             cL = cos(L)
             w = 1. + f*cL + g*sL
