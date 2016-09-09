@@ -29,18 +29,20 @@ class DynamicsCOE(DynamicsAbstract):
     def __call__(self, T, X):
         """Evaluate the dynamics at the given times.
 
-        X = [p e i W w M]
+        X = [p e i W w nu]
 
         See dynamics_abstract.py for more details.
         """
         p = X[:, 0]
         e = X[:, 1]
-        a = p / (1. - npm.power(e, 2))
-        n = npm.power(self.mu / npm.power(a, 3), .5)
+        nu = X[:, 5]
+        r = p / (1. + np.multiply(e, np.cos(nu)))
+        h = np.power(self.mu * p, .5)
+        nu_dot = h / np.power(r, 2)
 
         shape = X.shape
         zeros = npm.zeros((shape[0], shape[1]-1))
-        two_body = np.concatenate((zeros, n), 1)
+        two_body = np.concatenate((zeros, nu_dot), 1)
 
         perturbations = self.a_d(T, X)
         Xdot = two_body + perturbations

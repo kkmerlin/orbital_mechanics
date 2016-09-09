@@ -29,16 +29,16 @@ class GaussLagrangePlanetaryEqns():
         Input
         -----
         X : numpy.matrix
-        Time history matrix (mx6) of MEE X [p f g h k L mu], where
+        Time history matrix (mx6) of MEE [p f g h k L], where
         m is the number of samples.
 
         Output
         ------
-        M : numpy.matrix
+        G : numpy.matrix
         A 6x3 matrix of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        M = []
+        G = []
         for i, x in enumerate(X.tolist()):
             p = x[0]
             g = x[2]
@@ -63,5 +63,49 @@ class GaussLagrangePlanetaryEqns():
             kdot = [0., 0., s*s*sL/2/w]
             Ldot = [0., 0., (h*sL - k*cL)/w]
 
-            M.append(np.matrix([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu)
-        return M
+            G.append(np.matrix([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu)
+        return G
+
+    def coe(self, X):
+        """Gauss's form of Lagrange's Planetary Equations for COEs.
+
+        Input
+        -----
+        X : numpy.matrix
+        Time history matrix (mx6) of COE [p e i W w f], where
+        m is the number of samples.
+
+        Output
+        ------
+        G : numpy.matrix
+        A 6x3 matrix of each element's time derivative as a result of
+        disturbances in the r, theta, and angular momentum directions.
+        """
+        G = []
+        for i, x in enumerate(X.tolist()):
+            p = x[0]
+            e = x[2]
+            i = x[1]
+            W = x[3]
+            w = x[4]
+            f = x[5]
+
+            sf = sin(f)
+            cf = cos(f)
+            st = sin(f + w)
+            ct = cos(f + w)
+            si = sin(i)
+            ci = cos(i)
+            r = p / (1. + e*cf)
+            h = (self.mu * p)**.5
+
+            adot = np.matrix([e*sf, p/r, 0.]) * 2*a**2/h
+            edot = np.matrix([p*sf, (p+r)*cf + r*e, 0.]) / h
+            pdot = adot*(1-e**2) - 2*a*e*edot
+            idot = np.matrix([0., 0., r*ct/h])
+            Wdot = np.matrix([0., 0., r*st/h/si])
+            wdot = np.matrix([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
+            fdot = np.matrix([p*cf, -(p+r)*sf, 0.]) /h/e
+
+            G.append(np.matrix([pdot, edot, idot, Wdot, wdot, fdot]))
+        return G
