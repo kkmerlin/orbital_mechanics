@@ -4,8 +4,12 @@
 """
 import unittest
 import numpy as np
+import numpy.matlib as npm
 from ..dynamics_coe import DynamicsCOE
 from ..perturb_zero import PerturbZero
+from ...mcpi.mcpi import MCPI
+from ...mcpi.mcpi_approx import MCPIapprox
+from ...orbital_mech.element_sets.orb_coe import OrbCOE
 
 
 class TestDynamicsCOE(unittest.TestCase):
