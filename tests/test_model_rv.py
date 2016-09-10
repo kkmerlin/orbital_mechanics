@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import numpy.matlib as npm
 import matplotlib.pyplot as plt
-from ..dynamics_rv import DynamicsRV
+from ..model_rv import ModelRV
 from ..perturb_zero import PerturbZero
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
@@ -15,17 +15,17 @@ from ...orbital_mech.element_sets.orb_coe import OrbCOE
 from ...orbital_mech.element_sets.orb_rv import OrbRV
 
 
-class TestDynamicsRV(unittest.TestCase):
-    """Test class for DynamicsRV."""
+class TestModelRV(unittest.TestCase):
+    """Test class for ModelRV."""
 
     def setUp(self):
         """."""
         mu = 1.
-        self.drv = DynamicsRV(mu)
+        self.drv = ModelRV(mu)
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.drv, DynamicsRV)
+        self.assertIsInstance(self.drv, ModelRV)
 
     def test_getattr(self):
         """."""

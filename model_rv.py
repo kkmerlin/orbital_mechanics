@@ -5,11 +5,11 @@
 import numpy as np
 import numpy.linalg as npl
 import numpy.matlib as npm
-from .dynamics_abstract import DynamicsAbstract
+from .model_abstract import ModelAbstract
 
 
-class DynamicsRV(DynamicsAbstract):
-    """RV dynamics.
+class ModelRV(ModelAbstract):
+    """RV two-body model.
 
     Instance Members
     ----------------

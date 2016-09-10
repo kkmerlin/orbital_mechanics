@@ -5,10 +5,10 @@
 import numpy as np
 import numpy.linalg as npl
 import numpy.matlib as npm
-from .dynamics_abstract import DynamicsAbstract
+from .model_abstract import ModelAbstract
 
 
-class PerturbZero(DynamicsAbstract):
+class PerturbZero(ModelAbstract):
     """Perturbations with magnitude zero.
     """
 

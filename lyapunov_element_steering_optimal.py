@@ -6,11 +6,11 @@ import numpy as np
 import numpy.linalg as npl
 import numpy.matlib as npm
 from math import sin, cos, atan2
-from .dynamics_abstract import DynamicsAbstract
+from .model_abstract import ModelAbstract
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
 
 
-class LyapunovElementSteeringOptimal(DynamicsAbstract):
+class LyapunovElementSteeringOptimal(ModelAbstract):
     """Lyapunov control for orbital elements, neglecting phase angle.
 
     Phase angle element must be the last (6th) state listed.
@@ -45,7 +45,7 @@ class LyapunovElementSteeringOptimal(DynamicsAbstract):
         M = GLPE(self.mu).coe(X)
         Eta = X - self.Xref
 
-        U = npm.zeros((len(T), 6))
+        U = npm.zeros(X.shape)
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             # solve for the optimal unit vector direction

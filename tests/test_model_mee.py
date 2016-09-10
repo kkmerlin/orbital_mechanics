@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import numpy.matlib as npm
 import matplotlib.pyplot as plt
-from ..dynamics_mee import DynamicsMEE
+from ..model_mee import ModelMEE
 from ..perturb_zero import PerturbZero
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
@@ -15,17 +15,17 @@ from ...orbital_mech.element_sets.orb_coe import OrbCOE
 from ...orbital_mech.element_sets.orb_mee import OrbMEE
 
 
-class TestDynamicsMEE(unittest.TestCase):
-    """Test class for DynamicsMEE."""
+class TestModelMEE(unittest.TestCase):
+    """Test class for ModelMEE."""
 
     def setUp(self):
         """."""
         mu = 1.
-        self.dmee = DynamicsMEE(mu)
+        self.dmee = ModelMEE(mu)
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.dmee, DynamicsMEE)
+        self.assertIsInstance(self.dmee, ModelMEE)
 
     def test_getattr(self):
         """."""

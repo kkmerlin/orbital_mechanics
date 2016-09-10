@@ -5,27 +5,37 @@
 import numpy as np
 import numpy.linalg as npl
 import numpy.matlib as npm
-from .dynamics_abstract import DynamicsAbstract
+from .model_abstract import ModelAbstract
 
 
-class ThrustConstant(DynamicsAbstract):
-    """Zero perturbations.
+class ThrustConstant(ModelAbstract):
+    """Output the result of a constant acceleration vector defined in LVLH.
 
-    Creates a zero disturbance output according to the dimension of X
+    Instance Members
+    ----------------
+    vector : numpy.matrix
+    3x1 column vector representing the LVLH-constant acceleration applied.
+
+    stm : reference to GaussLagrangePlanetaryEqns.*element(X)
+    For generating the state transition matrix to take the constant LVLH
+    acceleration vector into state space time derivatives.
     """
-
-    _class_string = 'PerturbZero'
-
-    _parameter_list = []
-
-    def __init__(self):
+    def __init__(self, vector, stm):
         """."""
+        self.vector = vector
+        self.stm = stm
         super().__init__()
 
     def __call__(self, T, X):
-        """Output an appropriately sized matrix of zeros.
+        """Output the result of an LVLH-constant thrust vector.
 
         See dynamics_abstract.py for more details.
         """
-        a_d = npm.zeros(X.shape)
-        return a_d
+        Gs = self.stm(X)
+
+        Xdot = npm.zeros(X.shape)
+        for i, G in enumerate(Gs):
+            Xdot[i, :] = (G * self.vector).T
+
+        self.Xdot = Xdot
+        return Xdot

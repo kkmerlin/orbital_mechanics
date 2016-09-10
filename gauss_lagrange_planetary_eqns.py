@@ -1,18 +1,18 @@
 """Created on Wed Sep 08 2015 22:27.
 
 @author: Nathan Budd
-
-A collection of methods for Gauss's form of Lagrange's Planetary Equations in
-different element sets. A set of state histories is passed as input, and
-the output is a list of state transition matrices, mapping LVLH frame
-accelerations into orbital element derivatives.
 """
 import numpy as np
 from math import cos, sin
 
 
 class GaussLagrangePlanetaryEqns():
-    """MEE dynamics.
+    """Generate a state transition matrix.
+
+    A collection of methods for Gauss's form of Lagrange's Planetary Equations in
+    different element sets. A set of state histories is passed as input, and
+    the output is a list of state transition matrices, mapping LVLH frame
+    accelerations into orbital element derivatives.
 
     Instance Members
     -------

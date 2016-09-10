@@ -6,8 +6,8 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 
-class DynamicsAbstract(metaclass=ABCMeta):
-    """An abstract parent class for orbital dynamics classes.
+class ModelAbstract(metaclass=ABCMeta):
+    """An abstract parent class for orbital dynamic model classes.
 
     Sublcasses allow a variable number of parameter inputs at instantiation to
     accomodate all types of dynamic systems. Each of these parameters can be
