@@ -25,19 +25,19 @@ class ModelCOE(ModelAbstract):
     def __call__(self, T, X):
         """Evaluate the dynamics at the given times.
 
-        X = [p e i W w nu]
+        X = [p e i W w f]
 
         See dynamics_abstract.py for more details.
         """
         p = X[:, 0]
         e = X[:, 1]
-        nu = X[:, 5]
-        r = p / (1. + np.multiply(e, np.cos(nu)))
+        f = X[:, 5]
+        r = p / (1. + np.multiply(e, np.cos(f)))
         h = np.power(self.mu * p, .5)
-        nu_dot = h / np.power(r, 2)
+        f_dot = h / np.power(r, 2)
 
         shape = X.shape
         zeros = npm.zeros((shape[0], shape[1]-1))
-        self.Xdot = np.concatenate((zeros, nu_dot), 1)
+        self.Xdot = np.concatenate((zeros, f_dot), 1)
 
         return self.Xdot
