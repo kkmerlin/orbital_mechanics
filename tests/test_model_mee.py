@@ -21,20 +21,20 @@ class TestModelMEE(unittest.TestCase):
     def setUp(self):
         """."""
         mu = 1.
-        self.dmee = ModelMEE(mu)
+        self.mmee = ModelMEE(mu)
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.dmee, ModelMEE)
+        self.assertIsInstance(self.mmee, ModelMEE)
 
     def test_getattr(self):
         """."""
-        self.assertEqual(self.dmee.mu, 1)
+        self.assertEqual(self.mmee.mu, 1)
 
     def test_setattr(self):
         """."""
-        self.dmee.mu = 2.
-        self.assertEqual(self.dmee.mu, 2)
+        self.mmee.mu = 2.
+        self.assertEqual(self.mmee.mu, 2)
 
     def test_dynamics(self):
         x = np.matrix([[2., .5, 1., .1, .1, 0.],
@@ -42,8 +42,8 @@ class TestModelMEE(unittest.TestCase):
                        [8., .5, 1., .1, .1, 0.]])
         t = np.matrix([[0.], [1.], [2.]])
 
-        xdot = self.dmee(t, x)
-        print(self.dmee.Xdot)
+        xdot = self.mmee(t, x)
+        print(self.mmee.Xdot)
         self.assertEqual(xdot.shape, (3, 6))
 
     def test_dynamics_integration(self):
@@ -56,7 +56,7 @@ class TestModelMEE(unittest.TestCase):
                            'nu': 0.})).mee().list()[:-1]
         tol = 1e-10
 
-        mcpi = MCPI(self.dmee, domains, N, X_guess_func, X0, tol)
+        mcpi = MCPI(self.mmee, domains, N, X_guess_func, X0, tol)
         X_approx = mcpi.solve_serial()
         print(mcpi.iterations)
 
@@ -72,3 +72,20 @@ class TestModelMEE(unittest.TestCase):
         plt.legend(handles=[plt_p, plt_f, plt_g, plt_h, plt_k, plt_L])
         plt.show()
         self.assertIsInstance(X_approx, MCPIapprox)
+
+    def test_reference(self):
+        T_step = 0.1
+        domains = (0., 1.)
+        T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
+        X0 = np.matrix([2., .1, .1, 0., 0., 0.])
+        X = self.mmee.reference(np.matrix(T).T, X0).tolist()
+
+        plt_p, = plt.plot(T, [row[0] for row in X], label='p')
+        plt_e, = plt.plot(T, [row[1] for row in X], label='e')
+        plt_i, = plt.plot(T, [row[2] for row in X], label='i')
+        plt_W, = plt.plot(T, [row[3] for row in X], label='W')
+        plt_w, = plt.plot(T, [row[4] for row in X], label='w')
+        plt_f, = plt.plot(T, [row[5] for row in X], label='f')
+        plt.legend(handles=[plt_p, plt_e, plt_i, plt_W, plt_w, plt_f])
+        plt.show()
+        self.assertEqual(X[-1][0], X0[0,0])
