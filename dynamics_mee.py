@@ -11,20 +11,16 @@ from .dynamics_abstract import DynamicsAbstract
 class DynamicsMEE(DynamicsAbstract):
     """MEE dynamics.
 
-    Static Members
-    -------
-    _parameter_list : list
-        mu - standard gravitational parameter
-        a_d - DynamicsAbstract subclass
+    Instance Members
+    ----------------
+    mu : float
+    Standard gravitational parameter
     """
 
-    _class_string = 'DynamicsMEE'
-
-    _parameter_list = ['mu', 'a_d']
-
-    def __init__(self, arg):
+    def __init__(self, mu):
         """."""
-        super().__init__(arg)
+        self.mu = mu
+        super().__init__()
 
     def __call__(self, T, X):
         """Evaluate the dynamics at the given times.
@@ -45,8 +41,6 @@ class DynamicsMEE(DynamicsAbstract):
 
         shape = X.shape
         zeros = npm.zeros((shape[0], shape[1]-1))
-        two_body = np.concatenate((zeros, Ldot), 1)
+        self.Xdot = np.concatenate((zeros, Ldot), 1)
 
-        perturbations = self.a_d(T, X)
-        Xdot = two_body + perturbations
-        return Xdot
+        return self.Xdot

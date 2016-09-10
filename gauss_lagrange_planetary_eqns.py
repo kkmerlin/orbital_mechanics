@@ -4,7 +4,8 @@
 
 A collection of methods for Gauss's form of Lagrange's Planetary Equations in
 different element sets. A set of state histories is passed as input, and
-the output is a list of M matrices.
+the output is a list of state transition matrices, mapping LVLH frame
+accelerations into orbital element derivatives.
 """
 import numpy as np
 from math import cos, sin
@@ -41,8 +42,8 @@ class GaussLagrangePlanetaryEqns():
         G = []
         for i, x in enumerate(X.tolist()):
             p = x[0]
-            g = x[2]
             f = x[1]
+            g = x[2]
             h = x[3]
             k = x[4]
             L = x[5]
@@ -84,8 +85,8 @@ class GaussLagrangePlanetaryEqns():
         G = []
         for i, x in enumerate(X.tolist()):
             p = x[0]
-            e = x[2]
-            i = x[1]
+            e = x[1]
+            i = x[2]
             W = x[3]
             w = x[4]
             f = x[5]
@@ -96,6 +97,7 @@ class GaussLagrangePlanetaryEqns():
             ct = cos(f + w)
             si = sin(i)
             ci = cos(i)
+            a = p / (1. - e**2)
             r = p / (1. + e*cf)
             h = (self.mu * p)**.5
 
@@ -105,7 +107,7 @@ class GaussLagrangePlanetaryEqns():
             idot = np.matrix([0., 0., r*ct/h])
             Wdot = np.matrix([0., 0., r*st/h/si])
             wdot = np.matrix([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
-            fdot = np.matrix([p*cf, -(p+r)*sf, 0.]) /h/e
+            fdot = np.matrix([p*cf, -(p+r)*sf, 0.]) / h / e
 
-            G.append(np.matrix([pdot, edot, idot, Wdot, wdot, fdot]))
+            G.append(np.concatenate((pdot, edot, idot, Wdot, wdot, fdot)))
         return G

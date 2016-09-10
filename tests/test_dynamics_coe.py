@@ -18,7 +18,8 @@ class TestDynamicsCOE(unittest.TestCase):
 
     def setUp(self):
         """."""
-        self.dcoe = DynamicsCOE({'mu': 1., 'a_d': PerturbZero()})
+        mu = 1.
+        self.dcoe = DynamicsCOE(mu)
 
     def test_instantiation(self):
         """."""
@@ -40,7 +41,7 @@ class TestDynamicsCOE(unittest.TestCase):
         t = np.matrix([[0.], [1.], [2.]])
 
         xdot = self.dcoe(t, x)
-        print(xdot)
+        print(self.dcoe.Xdot)
         self.assertEqual(xdot.shape, (3, 6))
 
     def test_dynamics_integration(self):

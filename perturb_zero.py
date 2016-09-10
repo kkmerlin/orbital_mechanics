@@ -9,14 +9,8 @@ from .dynamics_abstract import DynamicsAbstract
 
 
 class PerturbZero(DynamicsAbstract):
-    """Zero perturbations.
-
-    Creates a zero disturbance output according to the dimension of X
+    """Perturbations with magnitude zero.
     """
-
-    _class_string = 'PerturbZero'
-
-    _parameter_list = []
 
     def __init__(self):
         """."""
@@ -27,5 +21,5 @@ class PerturbZero(DynamicsAbstract):
 
         See dynamics_abstract.py for more details.
         """
-        a_d = npm.zeros(X.shape)
-        return a_d
+        self.Xdot = npm.zeros(X.shape)
+        return self.Xdot

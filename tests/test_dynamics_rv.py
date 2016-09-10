@@ -20,7 +20,8 @@ class TestDynamicsRV(unittest.TestCase):
 
     def setUp(self):
         """."""
-        self.drv = DynamicsRV({'mu': 1., 'a_d': PerturbZero()})
+        mu = 1.
+        self.drv = DynamicsRV(mu)
 
     def test_instantiation(self):
         """."""
@@ -42,7 +43,7 @@ class TestDynamicsRV(unittest.TestCase):
         t = np.matrix([[0.], [1.], [2.]])
 
         rdot = self.drv(t, r)
-        print(rdot)
+        print(self.drv.Xdot)
         self.assertEqual(rdot.shape, (3, 3))
 
     def test_dynamics_integration(self):

@@ -10,36 +10,40 @@ from .dynamics_abstract import DynamicsAbstract
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
 
 
-class LyapunovMEEOptimal(DynamicsAbstract):
-    """Lyapunov control for MEE, neglecting phase angle.
+class LyapunovElementSteeringOptimal(DynamicsAbstract):
+    """Lyapunov control for orbital elements, neglecting phase angle.
 
-    Static Members
-    -------
-    _parameter_list : list
-        a_t - thrust magnitude
-        mu - standard gravitational parameter
-        xref - reference MEEs, numpy.matrix
+    Phase angle element must be the last (6th) state listed.
+
+    Instance Members
+    ----------------
+    mu : float
+    Standard gravitational parameter
+
+    a_t : float
+    Thrust magnitude
+
+    Xref : numpy.matrix
+    Reference state history
     """
 
-    _class_string = 'LyapunovMEEOptimal'
-
-    _parameter_list = ['a_t', 'mu', 'xref']
-
-    def __init__(self, arg):
+    def __init__(self, mu, a_t, Xref):
         """."""
-        super().__init__(arg)
+        self.mu = mu
+        self.a_t = a_t
+        self.Xref = Xref
+        super().__init__()
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.
 
-        X = [p e i W w L]
+        X = [e1 e2 e3 e4 e5 e_phase]
 
         See dynamics_abstract.py for more details.
         """
         W = np.matrix(np.diag([1.]*5 + [0.]))
-        M = GLPE(self.mu).mee(X)
-        Xref = npm.ones((len(T), 1)) * self.xref
-        Eta = X - Xref
+        M = GLPE(self.mu).coe(X)
+        Eta = X - self.Xref
 
         U = npm.zeros((len(T), 6))
         for i, eta in enumerate(Eta):
@@ -58,4 +62,5 @@ class LyapunovMEEOptimal(DynamicsAbstract):
 
             U[i, :] = (M[i] * u).T
 
+        self.Xdot = U
         return U

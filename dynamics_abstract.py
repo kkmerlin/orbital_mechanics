@@ -3,6 +3,7 @@
 @author: Nathan Budd
 """
 from abc import ABCMeta, abstractmethod
+import numpy as np
 
 
 class DynamicsAbstract(metaclass=ABCMeta):
@@ -16,46 +17,19 @@ class DynamicsAbstract(metaclass=ABCMeta):
     X is an mxn np.matrix, with m being the number of time steps and n being
     the number of states. The output is the state derivative history.
 
-    Static Members
+    Instance Members
     --------------
-    _class_string : string
-    An abbreviated name for the dynamical system.
-
-    _parameter_list : list
-    Parameters specific to the dynamical system.
+    Xdot : numpy.matrix
+    The most recently computed value
     """
-    @property
-    def _class_string(self):
-        ...
-
-    @property
-    def _parameter_list(self):
-        ...
-
     @abstractmethod
-    def __init__(self, arg=[]):
-        """.
-        Input
-        -----
-        arg : list or dict
-        Corresponding to the elements in _parameter_list
-
-        Instance Members
-        ----------------
-        _parameters : dictionary
-        Parameter names and values.
-        """
-        size = len(arg)
-
-        try:
-            self._parameters = {self._parameter_list[k]: arg[k]
-                                for k in range(size)}
-        except KeyError:
-            self._parameters = arg
+    def __init__(self):
+        """."""
+        self.Xdot = np.matrix([])
 
     @abstractmethod
     def __call__(self, T, X):
-        """Evaluate the dynamics at the given times.
+        """Evaluate the dynamics, disturbance, or control.
 
         Input
         -----
@@ -71,36 +45,3 @@ class DynamicsAbstract(metaclass=ABCMeta):
         An mxn matrix of state derivatives
         """
         pass
-
-    def __getattr__(self, name):
-        """Allow easy access to parameters.
-
-        Called when dot notation is used to access an element of the set.
-
-        Input
-        -----
-        name : string
-        The argument provided in the dot notation (e.g. name = arg when this
-        expression is used: obj.arg)
-        """
-        return self._parameters[name]
-
-    def __setattr__(self, name, value):
-        """Allow changes to parameters.
-
-        Called when dot notation is used to change an element of the standard
-        element set.
-
-        Input
-        -----
-        name : string
-        The argument provided in the dot notation (e.g. name = arg when this
-        expression is used: obj.arg)
-
-        value : float or list of floats
-        Value to be saved to self.name
-        """
-        if name == '_parameters':
-            super().__setattr__(name, value)
-        else:
-            self._parameters[name] = value
