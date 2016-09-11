@@ -8,6 +8,7 @@ import numpy.matlib as npm
 import matplotlib.pyplot as plt
 from ..model_mee import ModelMEE
 from ..perturb_zero import PerturbZero
+from ..reference_mee import ReferenceMEE
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 from ...orbital_mech.orbit import Orbit
@@ -78,7 +79,8 @@ class TestModelMEE(unittest.TestCase):
         domains = (0., 1.)
         T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
         X0 = np.matrix([2., .1, .1, 0., 0., 0.])
-        X = self.mmee.reference(np.matrix(T).T, X0).tolist()
+        # X = self.mmee.reference(np.matrix(T).T, X0).tolist()
+        X = ReferenceMEE(X0, self.mmee)(np.matrix(T).T).tolist()
 
         plt_p, = plt.plot(T, [row[0] for row in X], label='p')
         plt_e, = plt.plot(T, [row[1] for row in X], label='e')

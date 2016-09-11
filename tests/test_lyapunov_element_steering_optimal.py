@@ -7,7 +7,7 @@ import numpy as np
 import numpy.matlib as npm
 from ..lyapunov_element_steering_optimal import LyapunovElementSteeringOptimal
 from ..perturb_zero import PerturbZero
-from ..dynamics_mee import DynamicsMEE
+from ..model_mee import ModelMEE
 from ...orbital_mech.orbit import Orbit
 from ...orbital_mech.element_sets.orb_coe import OrbCOE
 from ...orbital_mech.element_sets.orb_mee import OrbMEE
@@ -22,7 +22,7 @@ class TestLyapunovElementSteeringOptimal(unittest.TestCase):
         """."""
         mu = 1.
         a_t = 1e-6
-        xref = np.matrix([[2., .1, 1., 0., 0., 0.]]*3)
+        xref = ModelMEE(mu).reference
         self.lmo = LyapunovElementSteeringOptimal(mu, a_t, xref)
 
     def test_instantiation(self):

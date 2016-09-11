@@ -23,8 +23,10 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
     a_t : float
     Thrust magnitude
 
-    Xref : numpy.matrix
-    Reference state history
+    Xref : function reference
+    Reference to a function that takes (T, X0) as input and gives X as output.
+    Where T is a mx1 numpy.matrix of times, X0 is a 1xn numpy.matrix of initial
+    states, and X is a mxn numpy.matrix of reference states.
     """
 
     def __init__(self, mu, a_t, Xref):
@@ -43,7 +45,7 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
         """
         W = np.matrix(np.diag([1.]*5 + [0.]))
         M = GLPE(self.mu).coe(X)
-        Eta = X - self.Xref
+        Eta = X - self.Xref(T, X[0, :])
 
         U = npm.zeros(X.shape)
         for i, eta in enumerate(Eta):

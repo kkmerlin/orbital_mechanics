@@ -5,10 +5,10 @@
 import numpy as np
 import numpy.linalg as npl
 import numpy.matlib as npm
-from .model_orbital_elements import ModelOrbitalElements
+from .model_abstract import ModelAbstract
 
 
-class ModelMEE(ModelOrbitalElements):
+class ModelMEE(ModelAbstract):
     """MEE two-body model.
 
     Instance Members

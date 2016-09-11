@@ -8,6 +8,7 @@ import numpy.matlib as npm
 import matplotlib.pyplot as plt
 from ..model_coe import ModelCOE
 from ..perturb_zero import PerturbZero
+from ..reference_coe import ReferenceCOE
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 from ...orbital_mech.element_sets.orb_coe import OrbCOE
@@ -75,7 +76,7 @@ class TestModelCOE(unittest.TestCase):
         domains = (0., 1.)
         T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
         X0 = np.matrix([2., .1, .1, 0., 0., 0.])
-        X = self.mcoe.reference(np.matrix(T).T, X0).tolist()
+        X = ReferenceCOE(X0, self.mcoe)(np.matrix(T).T).tolist()
 
         plt_p, = plt.plot(T, [row[0] for row in X], label='p')
         plt_e, = plt.plot(T, [row[1] for row in X], label='e')
