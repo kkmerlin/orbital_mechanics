@@ -23,10 +23,10 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
     a_t : float
     Thrust magnitude
 
-    Xref : function reference
-    Reference to a function that takes (T, X0) as input and gives X as output.
-    Where T is a mx1 numpy.matrix of times, X0 is a 1xn numpy.matrix of initial
-    states, and X is a mxn numpy.matrix of reference states.
+    Xref : ReferenceCOE or ReferenceMEE object
+    Can be called with input T (an mx1 numpy.matrix) to produce a reference
+    trajectory, X (mxn numpy.matrix) of reference states, where n is the state
+    dimension defined by the Xref.model attribute.
     """
 
     def __init__(self, mu, a_t, Xref):
@@ -45,7 +45,7 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
         """
         W = np.matrix(np.diag([1.]*5 + [0.]))
         M = GLPE(self.mu).coe(X)
-        Eta = X - self.Xref(T, X[0, :])
+        Eta = X - self.Xref(T)
 
         U = npm.zeros(X.shape)
         for i, eta in enumerate(Eta):
