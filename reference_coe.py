@@ -12,6 +12,6 @@ from .model_coe import ModelCOE
 class ReferenceCOE(ReferenceAbstract):
     """Class for generating reference trajectories with COEs."""
 
-    def __init__(self, X0, model):
+    def __init__(self, X0, mu):
         """."""
-        super().__init__(X0, model)
+        super().__init__(X0, ModelCOE(mu))

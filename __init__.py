@@ -1,5 +1,6 @@
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns
 from .lyapunov_element_steering_optimal import LyapunovElementSteeringOptimal
+from .lyapunov_element_steering import LyapunovElementSteering
 from .model_coe import ModelCOE
 from .model_mee import ModelMEE
 from .model_rv import ModelRV

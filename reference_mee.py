@@ -12,6 +12,6 @@ from .model_mee import ModelMEE
 class ReferenceMEE(ReferenceAbstract):
     """Class for generating reference trajectories with MEEs."""
 
-    def __init__(self, X0, model):
+    def __init__(self, X0, mu):
         """."""
-        super().__init__(X0, model)
+        super().__init__(X0, ModelMEE(mu))

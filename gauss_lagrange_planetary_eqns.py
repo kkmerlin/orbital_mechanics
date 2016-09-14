@@ -7,10 +7,10 @@ from math import cos, sin
 
 
 class GaussLagrangePlanetaryEqns():
-    """Generate a state transition matrix.
+    """Generate the Gauss-Lagrange Planetary Equations.
 
-    A collection of methods for Gauss's form of Lagrange's Planetary Equations in
-    different element sets. A set of state histories is passed as input, and
+    A collection of methods for Gauss's form of Lagrange's Planetary Equations
+    in different element sets. A set of state histories is passed as input, and
     the output is a list of state transition matrices, mapping LVLH frame
     accelerations into orbital element derivatives.
 
@@ -48,12 +48,9 @@ class GaussLagrangePlanetaryEqns():
             k = x[4]
             L = x[5]
 
-            try:
-                s = (1. + h**2 + k**2)**.5
-            except OverflowError:
-                import pdb;pdb.set_trace()
             sL = sin(L)
             cL = cos(L)
+            s = (1. + h**2 + k**2)**.5
             w = 1. + f*cL + g*sL
             rt_p_mu = (p/self.mu)**.5
 

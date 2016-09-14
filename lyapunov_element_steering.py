@@ -10,7 +10,7 @@ from .model_abstract import ModelAbstract
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
 
 
-class LyapunovElementSteeringOptimal(ModelAbstract):
+class LyapunovElementSteering(ModelAbstract):
     """Lyapunov control for orbital elements, neglecting phase angle.
 
     Phase angle element must be the last (6th) state listed.
@@ -53,19 +53,13 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
         U = npm.zeros(X.shape)
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
-            # solve for the optimal unit vector direction
-            c = self.a_t * eta * self.W * G[i]
-            alpha1 = atan2(c[0, 1], c[0, 0])
-            ca1 = cos(alpha1)
-            sa1 = sin(alpha1)
-            alpha2 = atan2((c[0, 0]*ca1 + c[0, 1]*sa1), c[0, 2])
-            ca2 = cos(alpha2)
-            sa2 = sin(alpha2)
-            u = np.matrix([[ca1*sa2],
-                           [sa1*sa2],
-                           [ca2]])
+            c = eta * self.W * G[i]
+            try:
+                u = - c.T / npl.norm(c)
+            except RuntimeWarning:
+                u = npm.zeros(c.T.shape)
 
-            U[i, :] = self.a_t * (G[i] * u).T
+            U[i, :] = (self.a_t * G[i] * u).T
 
         self.Xdot = U
         return U

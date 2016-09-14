@@ -5,9 +5,10 @@
 import unittest
 import numpy as np
 import numpy.matlib as npm
-from ..lyapunov_element_steering_optimal import LyapunovElementSteeringOptimal
+from ..lyapunov_element_steering import LyapunovElementSteering
 from ..perturb_zero import PerturbZero
 from ..model_mee import ModelMEE
+from ..reference_coe import ReferenceCOE
 from ...orbital_mech.orbit import Orbit
 from ...orbital_mech.element_sets.orb_coe import OrbCOE
 from ...orbital_mech.element_sets.orb_mee import OrbMEE
@@ -15,20 +16,21 @@ from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 
 
-class TestLyapunovElementSteeringOptimal(unittest.TestCase):
-    """Test class for LyapunovElementSteeringOptimal."""
+class TestLyapunovElementSteering(unittest.TestCase):
+    """Test class for LyapunovElementSteering."""
 
     def setUp(self):
         """."""
         mu = 1.
-        W = numpy.matrix(np.diag([1.]*5 + [0.]))
+        W = np.matrix(np.diag([1.]*5 + [0.]))
         a_t = 1e-6
-        xref = ModelMEE(mu).reference
-        self.lmo = LyapunovElementSteeringOptimal(mu, W, a_t, xref)
+        X0 = np.matrix([2., .5, 1., .1, .1, 0.])
+        xref = ReferenceCOE(X0, mu)
+        self.lmo = LyapunovElementSteering(mu, W, a_t, xref)
 
     def test_instantiation(self):
         """."""
-        self.assertIsInstance(self.lmo, LyapunovElementSteeringOptimal)
+        self.assertIsInstance(self.lmo, LyapunovElementSteering)
 
     def test_getattr(self):
         """."""
