@@ -19,7 +19,7 @@ class WarmStartConstant(ModelAbstract):
 
         See dynamics_abstract.py for more details.
         """
-        X0 = X[-1]
+        X0 = X[0]
         self.Xdot = npm.ones((len(T), 1)) * X0
 
         return self.Xdot
