@@ -16,14 +16,14 @@ class ThrustConstant(ModelAbstract):
     vector : numpy.matrix
     3x1 column vector representing the LVLH-constant acceleration applied.
 
-    stm : reference to GaussLagrangePlanetaryEqns.*element(X)
-    For generating the state transition matrix to take the constant LVLH
-    acceleration vector into state space time derivatives.
+    glpe : reference to GaussLagrangePlanetaryEqns.*element(X)
+    Takes the constant LVLH acceleration vector into state space time
+    derivatives.
     """
-    def __init__(self, vector, stm):
+    def __init__(self, vector, glpe):
         """."""
         self.vector = vector
-        self.stm = stm
+        self.glpe = glpe
         super().__init__()
 
     def __call__(self, T, X):
@@ -31,7 +31,7 @@ class ThrustConstant(ModelAbstract):
 
         See dynamics_abstract.py for more details.
         """
-        Gs = self.stm(X)
+        Gs = self.glpe(X)
 
         Xdot = npm.zeros(X.shape)
         for i, G in enumerate(Gs):
@@ -39,3 +39,15 @@ class ThrustConstant(ModelAbstract):
 
         self.Xdot = Xdot
         return Xdot
+
+    def __repr__(self):
+        """Printable represenation of the object."""
+        return 'ThrustConstant({}, {})'.format(
+            self.vector, self.glpe)
+
+    def __str__(self):
+        """Human readable represenation of the object."""
+        output = 'ThrustConstant'
+        output += '(vector={}, glpe={}, perturbations={})'.format(
+            self.vector, self.glpe)
+        return output

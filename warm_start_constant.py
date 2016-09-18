@@ -23,3 +23,11 @@ class WarmStartConstant(ModelAbstract):
         self.Xdot = npm.ones((len(T), 1)) * X0
 
         return self.Xdot
+
+    def __repr__(self):
+        """Printable represenation of the object."""
+        return 'WarmStartConstant()'
+
+    def __str__(self):
+        """Human readable represenation of the object."""
+        return 'WarmStartConstant()'

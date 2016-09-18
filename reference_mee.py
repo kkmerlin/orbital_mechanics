@@ -15,3 +15,11 @@ class ReferenceMEE(ReferenceAbstract):
     def __init__(self, X0, mu):
         """."""
         super().__init__(X0, ModelMEE(mu))
+
+    def __repr__(self):
+        """Printable represenation of the object."""
+        return super().repr('ReferenceMEE')
+
+    def __str__(self):
+        """Human readable represenation of the object."""
+        return super().str('ReferenceMEE')

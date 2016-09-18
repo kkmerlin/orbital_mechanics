@@ -39,3 +39,11 @@ class ModelRV(ModelAbstract):
         self.Xdot = np.concatenate((V, Vdot), 1)
 
         return self.Xdot
+
+        def __repr__(self):
+            """Printable represenation of the object."""
+            return 'ModelRV({})'.format(self.mu)
+
+        def __str__(self):
+            """Human readable represenation of the object."""
+            return 'ModelRV(mu={})'.format(self.mu)

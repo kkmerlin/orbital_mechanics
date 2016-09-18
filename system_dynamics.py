@@ -51,3 +51,15 @@ class SystemDynamics(ModelAbstract):
 
         self.Xdot = Xdot
         return Xdot
+
+    def __repr__(self):
+        """Printable represenation of the object."""
+        return 'SystemDynamics({}, {}, {})'.format(
+            self.plant, self.control, self.perturbations)
+
+    def __str__(self):
+        """Human readable represenation of the object."""
+        output = 'SystemDynamics'
+        output += '(plant={}, control={}, perturbations={})'.format(
+            self.plant, self.control, self.perturbations)
+        return output

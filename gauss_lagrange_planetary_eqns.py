@@ -108,3 +108,11 @@ class GaussLagrangePlanetaryEqns():
 
             G.append(np.concatenate((pdot, edot, idot, Wdot, wdot, fdot)))
         return G
+
+        def __repr__(self):
+            """Printable represenation of the object."""
+            return 'GaussLagrangePlanetaryEqns({})'.format(self.mu)
+
+        def __str__(self):
+            """Human readable represenation of the object."""
+            return 'GaussLagrangePlanetaryEqns(mu={})'.format(self.mu)

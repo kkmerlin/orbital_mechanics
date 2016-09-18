@@ -47,3 +47,13 @@ class ReferenceAbstract(metaclass=ABCMeta):
         X = npm.ones(T0.shape) * self.X0 + dX
 
         return X
+
+        def repr(self, class_name):
+            """Printable represenation of the object."""
+            return class_name+'({}, {})'.format(self.X0, self.model)
+
+        def str(self):
+            """Human readable represenation of the object."""
+            output = class_name
+            output += '(X0={}, model={})'.format(self.X0, self.model)
+            return output

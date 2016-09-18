@@ -63,3 +63,15 @@ class LyapunovElementSteering(ModelAbstract):
 
         self.Xdot = U
         return U
+
+        def __repr__(self):
+            """Printable represenation of the object."""
+            return 'LyapunovElementSteering({}, {}, {}, {})'.format(
+                self.mu, self.W, self.a_t, self.Xref)
+
+        def __str__(self):
+            """Human readable represenation of the object."""
+            output = 'LyapunovElementSteering'
+            output += '(mu={}, W={}, a_t={}, Xref={})'.format(
+                self.mu, self.W, self.a_t, self.Xref)
+            return output

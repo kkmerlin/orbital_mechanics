@@ -23,3 +23,11 @@ class PerturbZero(ModelAbstract):
         """
         self.Xdot = npm.zeros(X.shape)
         return self.Xdot
+
+        def __repr__(self):
+            """Printable represenation of the object."""
+            return 'PerturbZero()'
+
+        def __str__(self):
+            """Human readable represenation of the object."""
+            return 'PerturbZero()'

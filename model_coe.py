@@ -41,3 +41,11 @@ class ModelCOE(ModelAbstract):
         self.Xdot = np.concatenate((zeros, f_dot), 1)
 
         return self.Xdot
+
+        def __repr__(self):
+            """Printable represenation of the object."""
+            return 'ModelCOE({})'.format(self.mu)
+
+        def __str__(self):
+            """Human readable represenation of the object."""
+            return 'ModelCOE(mu={})'.format(self.mu)
