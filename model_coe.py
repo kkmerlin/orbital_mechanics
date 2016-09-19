@@ -35,6 +35,7 @@ class ModelCOE(ModelAbstract):
         h = np.power(self.mu * p, .5)
         f_dot = h / np.power(r, 2)
 
+
         shape = X.shape
         self.Xdot = np.zeros(shape)
         self.Xdot[:, -1] = f_dot
