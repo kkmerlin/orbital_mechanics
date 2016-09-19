@@ -4,7 +4,6 @@
 """
 import numpy as np
 import numpy.linalg as npl
-import numpy.matlib as npm
 from .model_abstract import ModelAbstract
 
 
@@ -20,7 +19,7 @@ class WarmStartConstant(ModelAbstract):
         See dynamics_abstract.py for more details.
         """
         X0 = X[0]
-        self.Xdot = npm.ones((len(T), 1)) * X0
+        self.Xdot = np.ones((len(T), 1)) * X0
 
         return self.Xdot
 

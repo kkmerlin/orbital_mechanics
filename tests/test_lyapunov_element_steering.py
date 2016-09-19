@@ -4,7 +4,6 @@
 """
 import unittest
 import numpy as np
-import numpy.matlib as npm
 from ..lyapunov_element_steering import LyapunovElementSteering
 from ..perturb_zero import PerturbZero
 from ..model_mee import ModelMEE
@@ -22,9 +21,9 @@ class TestLyapunovElementSteering(unittest.TestCase):
     def setUp(self):
         """."""
         mu = 1.
-        W = np.matrix(np.diag([1.]*5 + [0.]))
+        W = np.diag([1.]*5 + [0.])
         a_t = 1e-6
-        X0 = np.matrix([2., .5, 1., .1, .1, 0.])
+        X0 = np.array([[2., .5, 1., .1, .1, 0.]])
         xref = ReferenceCOE(X0, mu)
         self.lmo = LyapunovElementSteering(mu, W, a_t, xref)
 
@@ -43,10 +42,10 @@ class TestLyapunovElementSteering(unittest.TestCase):
 
     def test_control(self):
         """."""
-        x = np.matrix([[2., .5, 1., .1, .1, 0.],
-                       [4., .5, 1., .1, .1, 0.],
-                       [8., .5, 1., .1, .1, 0.]])
-        t = np.matrix([[0.], [1.], [2.]])
+        x = np.array([[2., .5, 1., .1, .1, 0.],
+                      [4., .5, 1., .1, .1, 0.],
+                      [8., .5, 1., .1, .1, 0.]])
+        t = np.array([[0.], [1.], [2.]])
 
         U = self.lmo(t, x)
         self.assertEqual(len(U), 3)

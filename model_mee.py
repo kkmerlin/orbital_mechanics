@@ -4,7 +4,6 @@
 """
 import numpy as np
 import numpy.linalg as npl
-import numpy.matlib as npm
 from .model_abstract import ModelAbstract
 
 
@@ -37,11 +36,11 @@ class ModelMEE(ModelAbstract):
         f = X[:, 1]
         g = X[:, 2]
         r = p / (1. + np.multiply(f, cL) + np.multiply(g, sL))
-        Ldot = np.power(self.mu * p, .5) / np.power(r, 2)
+        Ldot = (self.mu * p)**.5 / r**2
 
         shape = X.shape
-        zeros = npm.zeros((shape[0], shape[1]-1))
-        self.Xdot = np.concatenate((zeros, Ldot), 1)
+        self.Xdot = np.zeros(shape)
+        self.Xdot[:, -1] = Ldot
 
         return self.Xdot
 

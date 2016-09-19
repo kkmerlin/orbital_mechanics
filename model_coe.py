@@ -4,7 +4,6 @@
 """
 import numpy as np
 import numpy.linalg as npl
-import numpy.matlib as npm
 from .model_abstract import ModelAbstract
 
 
@@ -37,8 +36,8 @@ class ModelCOE(ModelAbstract):
         f_dot = h / np.power(r, 2)
 
         shape = X.shape
-        zeros = npm.zeros((shape[0], shape[1]-1))
-        self.Xdot = np.concatenate((zeros, f_dot), 1)
+        self.Xdot = np.zeros(shape)
+        self.Xdot[:, -1] = f_dot
 
         return self.Xdot
 

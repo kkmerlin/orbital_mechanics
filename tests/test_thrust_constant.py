@@ -4,7 +4,7 @@
 """
 import unittest
 import numpy as np
-import numpy.matlib as npm
+import numpy.matlib as np
 import matplotlib.pyplot as plt
 from ..thrust_constant import ThrustConstant
 from ..model_coe import ModelCOE
@@ -21,7 +21,7 @@ class TestThrustConstant(unittest.TestCase):
     def setUp(self):
         """."""
         mu = 1.
-        self.vector = np.matrix([0., 1., 0.]).T
+        self.vector = np.array([[0., 1., 0.]]).T
         stm = GaussLagrangePlanetaryEqns(mu).coe
         self.thrust = ThrustConstant(self.vector, stm)
 
@@ -35,14 +35,14 @@ class TestThrustConstant(unittest.TestCase):
 
     def test_setattr(self):
         """."""
-        self.thrust.vector = np.matrix([1.])
+        self.thrust.vector = np.array([[1.]])
         self.assertEqual(self.thrust.vector.shape, (1, 1))
 
     def test_dynamics(self):
-        x = np.matrix([[2., .5, 1., .1, .1, 0.],
-                       [4., .5, 1., .1, .1, 0.],
-                       [8., .5, 1., .1, .1, 0.]])
-        t = np.matrix([[0.], [1.], [2.]])
+        x = np.array([[2., .5, 1., .1, .1, 0.],
+                      [4., .5, 1., .1, .1, 0.],
+                      [8., .5, 1., .1, .1, 0.]])
+        t = np.array([[0.], [1.], [2.]])
 
         Xdot = self.thrust(t, x)
         print(self.thrust.Xdot)

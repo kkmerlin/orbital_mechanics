@@ -28,14 +28,14 @@ class TestGaussLagrangePlanetaryEqns(unittest.TestCase):
         self.assertEqual(self.glpe.mu, 2)
 
     def test_mee(self):
-        x = np.matrix([[2., .5, 1., .1, .1, 0.]])
+        x = np.array([[2., .5, 1., .1, .1, 0.]])
 
         M = self.glpe.mee(x)
         print(M)
         self.assertEqual(M[0].shape, (6, 3))
 
     def test_mee_multiple(self):
-        X = np.matrix([[2., .5, 1., .1, .1, 0.]]*10)
+        X = np.array([[2., .5, 1., .1, .1, 0.]]*10)
 
         M = self.glpe.mee(X)
         self.assertEqual(len(M), 10)

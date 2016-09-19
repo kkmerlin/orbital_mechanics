@@ -13,19 +13,19 @@ class ModelAbstract(metaclass=ABCMeta):
     accomodate all types of dynamic systems. Each of these parameters can be
     accessed as if they were standalone parameters.
 
-    Subclasses can be called with inputs (t, X) where t is an mx1 np.matrix and
-    X is an mxn np.matrix, with m being the number of time steps and n being
+    Subclasses can be called with inputs (t, X) where t is an mx1 np.array and
+    X is an mxn np.array, with m being the number of time steps and n being
     the number of states. The output is the state derivative history.
 
     Instance Members
     --------------
-    Xdot : numpy.matrix
+    Xdot : numpy.array
     The most recently computed value
     """
     @abstractmethod
     def __init__(self):
         """."""
-        self.Xdot = np.matrix([])
+        self.Xdot = np.array([])
 
     @abstractmethod
     def __call__(self, T, X):
@@ -33,15 +33,15 @@ class ModelAbstract(metaclass=ABCMeta):
 
         Input
         -----
-        T : np.matrix
-        An mx1 column matrix of times.
+        T : np.array
+        An mx1 column array of times.
 
-        X : np.matrix
-        An mxn matrix of states.
+        X : np.array
+        An mxn array of states.
 
         Output
         ------
-        Xdot : np.matrix
-        An mxn matrix of state derivatives
+        Xdot : np.array
+        An mxn array of state derivatives
         """
         pass

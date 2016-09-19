@@ -29,18 +29,18 @@ class GaussLagrangePlanetaryEqns():
 
         Input
         -----
-        X : numpy.matrix
-        Time history matrix (mx6) of MEE [p f g h k L], where
+        X : numpy.array
+        Time history array (mx6) of MEE [p f g h k L], where
         m is the number of samples.
 
         Output
         ------
-        G : numpy.matrix
-        A 6x3 matrix of each element's time derivative as a result of
+        G : numpy.array
+        A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        G = []
-        for i, x in enumerate(X.tolist()):
+        G = [np.array([[]]) for x in X]
+        for i, x in enumerate(X):
             p = x[0]
             f = x[1]
             g = x[2]
@@ -61,7 +61,7 @@ class GaussLagrangePlanetaryEqns():
             kdot = [0., 0., s*s*sL/2/w]
             Ldot = [0., 0., (h*sL - k*cL)/w]
 
-            G.append(np.matrix([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu)
+            G[i] = np.array([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu
         return G
 
     def coe(self, X):
@@ -69,18 +69,18 @@ class GaussLagrangePlanetaryEqns():
 
         Input
         -----
-        X : numpy.matrix
-        Time history matrix (mx6) of COE [p e i W w f], where
+        X : numpy.array
+        Time history array (mx6) of COE [p e i W w f], where
         m is the number of samples.
 
         Output
         ------
-        G : numpy.matrix
-        A 6x3 matrix of each element's time derivative as a result of
+        G : numpy.array
+        A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        G = []
-        for i, x in enumerate(X.tolist()):
+        G = [np.zeros((6, 3)) for x in X]
+        for k, x in enumerate(X):
             p = x[0]
             e = x[1]
             i = x[2]
@@ -98,15 +98,20 @@ class GaussLagrangePlanetaryEqns():
             r = p / (1. + e*cf)
             h = (self.mu * p)**.5
 
-            adot = np.matrix([e*sf, p/r, 0.]) * 2*a**2/h
-            edot = np.matrix([p*sf, (p+r)*cf + r*e, 0.]) / h
+            adot = np.array([e*sf, p/r, 0.]) * 2*a**2/h
+            edot = np.array([p*sf, (p+r)*cf + r*e, 0.]) / h
             pdot = adot*(1-e**2) - 2*a*e*edot
-            idot = np.matrix([0., 0., r*ct/h])
-            Wdot = np.matrix([0., 0., r*st/h/si])
-            wdot = np.matrix([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
-            fdot = np.matrix([p*cf, -(p+r)*sf, 0.]) / h / e
+            idot = np.array([0., 0., r*ct/h])
+            Wdot = np.array([0., 0., r*st/h/si])
+            wdot = np.array([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
+            fdot = np.array([p*cf, -(p+r)*sf, 0.]) / h / e
 
-            G.append(np.concatenate((pdot, edot, idot, Wdot, wdot, fdot)))
+            G[k][0] = pdot
+            G[k][1] = edot
+            G[k][2] = idot
+            G[k][3] = Wdot
+            G[k][4] = wdot
+            G[k][5] = fdot
         return G
 
         def __repr__(self):

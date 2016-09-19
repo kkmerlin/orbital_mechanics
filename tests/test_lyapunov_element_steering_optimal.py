@@ -7,10 +7,8 @@ import numpy as np
 import numpy.matlib as npm
 from ..lyapunov_element_steering_optimal import LyapunovElementSteeringOptimal
 from ..perturb_zero import PerturbZero
-from ..model_mee import ModelMEE
+from ..reference_mee import ReferenceMEE
 from ...orbital_mech.orbit import Orbit
-from ...orbital_mech.element_sets.orb_coe import OrbCOE
-from ...orbital_mech.element_sets.orb_mee import OrbMEE
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 
@@ -21,9 +19,10 @@ class TestLyapunovElementSteeringOptimal(unittest.TestCase):
     def setUp(self):
         """."""
         mu = 1.
-        W = numpy.matrix(np.diag([1.]*5 + [0.]))
+        W = np.array(np.diag([1.]*5 + [0.]))
         a_t = 1e-6
-        xref = ModelMEE(mu).reference
+        x0 = np.array([[2., .5, 1., .1, .1, 0.]])
+        xref = ReferenceMEE(x0, mu)
         self.lmo = LyapunovElementSteeringOptimal(mu, W, a_t, xref)
 
     def test_instantiation(self):
@@ -41,10 +40,10 @@ class TestLyapunovElementSteeringOptimal(unittest.TestCase):
 
     def test_control(self):
         """."""
-        x = np.matrix([[2., .5, 1., .1, .1, 0.],
-                       [4., .5, 1., .1, .1, 0.],
-                       [8., .5, 1., .1, .1, 0.]])
-        t = np.matrix([[0.], [1.], [2.]])
+        x = np.array([[2., .5, 1., .1, .1, 0.],
+                      [4., .5, 1., .1, .1, 0.],
+                      [8., .5, 1., .1, .1, 0.]])
+        t = np.array([[0.], [1.], [2.]])
 
         U = self.lmo(t, x)
         self.assertEqual(len(U), 3)

@@ -8,6 +8,7 @@ import numpy.matlib as npm
 import matplotlib.pyplot as plt
 from ..model_rv import ModelRV
 from ..perturb_zero import PerturbZero
+from ..warm_start_constant import WarmStartConstant
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 from ...orbital_mech.orbit import Orbit
@@ -47,21 +48,17 @@ class TestModelRV(unittest.TestCase):
         self.assertEqual(rdot.shape, (3, 3))
 
     def test_dynamics_integration(self):
-        def X_guess_func(t):
-            return t * npm.ones((1, 6)) + 0.1
-
         domains = (0., 30.)
         N = 20,
         X0 = Orbit(OrbCOE({'p': 2., 'e': 0., 'i': .5, 'W': 0., 'w': 0.,
                            'nu': 0.})).rv().list()[:-1]
         tol = 1e-10
 
-        mcpi = MCPI(self.drv, domains, N, X_guess_func, X0, tol)
+        mcpi = MCPI(self.drv, domains, N, WarmStartConstant(), X0, tol)
         X_approx = mcpi.solve_serial()
         print(mcpi.iterations)
 
-        T_step = 0.1
-        T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
+        T = np.linspace(domains[0], domains[1], 100).reshape((100, 1))
         x_approx = X_approx(T)
         plt_rx, = plt.plot(T, [row[0] for row in x_approx], label='r_x')
         plt_ry, = plt.plot(T, [row[1] for row in x_approx], label='r_y')

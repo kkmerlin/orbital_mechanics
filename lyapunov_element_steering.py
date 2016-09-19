@@ -4,7 +4,6 @@
 """
 import numpy as np
 import numpy.linalg as npl
-import numpy.matlib as npm
 from math import sin, cos, atan2
 from .model_abstract import ModelAbstract
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
@@ -20,15 +19,15 @@ class LyapunovElementSteering(ModelAbstract):
     mu : float
     Standard gravitational parameter
 
-    W : numpy.matrix
-    Diagonal nxn weight matrix, where n is the state dimension.
+    W : numpy.array
+    Diagonal nxn weight array, where n is the state dimension.
 
     a_t : float
     Thrust magnitude
 
     Xref : ReferenceCOE or ReferenceMEE object
-    Can be called with input T (an mx1 numpy.matrix) to produce a reference
-    trajectory, X (mxn numpy.matrix) of reference states, where n is the state
+    Can be called with input T (an mx1 numpy.array) to produce a reference
+    trajectory, X (mxn numpy.array) of reference states, where n is the state
     dimension defined by the Xref.model attribute.
     """
 
@@ -50,16 +49,16 @@ class LyapunovElementSteering(ModelAbstract):
         G = GLPE(self.mu).coe(X)
         Eta = X - self.Xref(T)
 
-        U = npm.zeros(X.shape)
+        U = np.zeros(X.shape)
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             c = eta * self.W * G[i]
             try:
                 u = - c.T / npl.norm(c)
             except RuntimeWarning:
-                u = npm.zeros(c.T.shape)
+                u = np.zeros(c.T.shape)
 
-            U[i, :] = (self.a_t * G[i] * u).T
+            U[i] = (self.a_t * np.dot(G[i], u)).T
 
         self.Xdot = U
         return U

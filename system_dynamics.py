@@ -34,16 +34,16 @@ class SystemDynamics(ModelAbstract):
 
         Input
         -----
-        T : np.matrix
-        An mx1 column matrix of times.
+        T : np.array
+        An mx1 column array of times.
 
-        X : np.matrix
-        An mxn matrix of states.
+        X : np.array
+        An mxn array of states.
 
         Output
         ------
-        Xdot : np.matrix
-        An mxn matrix of state derivatives
+        Xdot : np.array
+        An mxn array of state derivatives
         """
         Xdot = self.plant(T, X) + self.control(T, X)
         for perturb in self.perturbations:

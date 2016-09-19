@@ -2,9 +2,6 @@
 
 @author: Nathan Budd
 """
-import numpy as np
-import numpy.linalg as npl
-import numpy.matlib as npm
 from .reference_abstract import ReferenceAbstract
 from .model_mee import ModelMEE
 

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from ..model_mee import ModelMEE
 from ..perturb_zero import PerturbZero
 from ..reference_mee import ReferenceMEE
+from ..warm_start_constant import WarmStartConstant
 from ...mcpi.mcpi import MCPI
 from ...mcpi.mcpi_approx import MCPIapprox
 from ...orbital_mech.orbit import Orbit
@@ -20,49 +21,41 @@ class TestModelMEE(unittest.TestCase):
     """Test class for ModelMEE."""
 
     def setUp(self):
-        """."""
         mu = 1.
         self.mmee = ModelMEE(mu)
 
     def test_instantiation(self):
-        """."""
         self.assertIsInstance(self.mmee, ModelMEE)
 
     def test_getattr(self):
-        """."""
         self.assertEqual(self.mmee.mu, 1)
 
     def test_setattr(self):
-        """."""
         self.mmee.mu = 2.
         self.assertEqual(self.mmee.mu, 2)
 
     def test_dynamics(self):
-        x = np.matrix([[2., .5, 1., .1, .1, 0.],
-                       [4., .5, 1., .1, .1, 0.],
-                       [8., .5, 1., .1, .1, 0.]])
-        t = np.matrix([[0.], [1.], [2.]])
+        x = np.array([[2., .5, 1., .1, .1, 0.],
+                      [4., .5, 1., .1, .1, 0.],
+                      [8., .5, 1., .1, .1, 0.]])
+        t = np.array([[0.], [1.], [2.]])
 
         xdot = self.mmee(t, x)
         print(self.mmee.Xdot)
         self.assertEqual(xdot.shape, (3, 6))
 
     def test_dynamics_integration(self):
-        def X_guess_func(t):
-            return t * npm.ones((1, 6)) + 0.1
-
         domains = (0., 30.)
         N = 20,
         X0 = Orbit(OrbCOE({'p': 2., 'e': 0., 'i': .5, 'W': 0., 'w': 0.,
                            'nu': 0.})).mee().list()[:-1]
         tol = 1e-10
 
-        mcpi = MCPI(self.mmee, domains, N, X_guess_func, X0, tol)
+        mcpi = MCPI(self.mmee, domains, N, WarmStartConstant(), X0, tol)
         X_approx = mcpi.solve_serial()
         print(mcpi.iterations)
 
-        T_step = 0.1
-        T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
+        T = np.linspace(domains[0], domains[1], 100).reshape((100, 1))
         x_approx = X_approx(T)
         plt_p, = plt.plot(T, [row[0] for row in x_approx], label='p')
         plt_f, = plt.plot(T, [row[1] for row in x_approx], label='f')
@@ -75,12 +68,11 @@ class TestModelMEE(unittest.TestCase):
         self.assertIsInstance(X_approx, MCPIapprox)
 
     def test_reference(self):
-        T_step = 0.1
         domains = (0., 1.)
-        T = np.arange(domains[0], domains[1]+T_step, T_step).tolist()
-        X0 = np.matrix([2., .1, .1, 0., 0., 0.])
-        # X = self.mmee.reference(np.matrix(T).T, X0).tolist()
-        X = ReferenceMEE(X0, self.mmee)(np.matrix(T).T).tolist()
+        T = np.linspace(domains[0], domains[1], 100).reshape((100, 1))
+        X0 = np.array([[2., .1, .1, 0., 0., 0.]])
+        # X = self.mmee.reference(np.array(T).T, X0).tolist()
+        X = ReferenceMEE(X0, 1.)(T).tolist()
 
         plt_p, = plt.plot(T, [row[0] for row in X], label='p')
         plt_e, = plt.plot(T, [row[1] for row in X], label='e')

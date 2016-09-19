@@ -3,8 +3,6 @@
 @author: Nathan Budd
 """
 import numpy as np
-import numpy.linalg as npl
-import numpy.matlib as npm
 from .model_abstract import ModelAbstract
 
 
@@ -13,7 +11,7 @@ class ThrustConstant(ModelAbstract):
 
     Instance Members
     ----------------
-    vector : numpy.matrix
+    vector : numpy.array
     3x1 column vector representing the LVLH-constant acceleration applied.
 
     glpe : reference to GaussLagrangePlanetaryEqns.*element(X)
@@ -33,9 +31,9 @@ class ThrustConstant(ModelAbstract):
         """
         Gs = self.glpe(X)
 
-        Xdot = npm.zeros(X.shape)
+        Xdot = np.zeros(X.shape)
         for i, G in enumerate(Gs):
-            Xdot[i, :] = (G * self.vector).T
+            Xdot[i, :] = np.dot(G, self.vector).T
 
         self.Xdot = Xdot
         return Xdot

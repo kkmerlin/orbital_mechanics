@@ -4,8 +4,6 @@
 """
 from abc import ABCMeta, abstractmethod
 import numpy as np
-import numpy.linalg as npl
-import numpy.matlib as npm
 
 
 class ReferenceAbstract(metaclass=ABCMeta):
@@ -13,8 +11,8 @@ class ReferenceAbstract(metaclass=ABCMeta):
 
     Instance Members
     ----------------
-    X0 : np.matrix
-    A 1xn matrix of initial states.
+    X0 : np.array
+    A 1xn array of initial states.
 
     model : ModelCOE or ModelMEE object
     Holds the dynamics that will be used to generate the reference trajectory's
@@ -31,20 +29,20 @@ class ReferenceAbstract(metaclass=ABCMeta):
 
         Input
         -----
-        T : np.matrix
-        An mx1 column matrix of times.
+        T : np.array
+        An mx1 column array of times.
 
         Output
         ------
-        X : np.matrix
-        An mxn matrix of reference states.
+        X : np.array
+        An mxn array of reference states.
         """
-        T0 = T[0, 0]
+        T0 = T[0]
         Xdot = self.model.__call__(T0, self.X0)
 
         dT = T - T0
-        dX = dT * Xdot
-        X = npm.ones(T0.shape) * self.X0 + dX
+        dX = np.dot(dT, Xdot)
+        X = np.ones(T0.shape) * self.X0 + dX
 
         return X
 
