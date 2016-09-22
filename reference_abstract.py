@@ -40,7 +40,7 @@ class ReferenceAbstract(metaclass=ABCMeta):
         An mxn array of reference states.
         """
         T0 = T[0, 0]
-        p = segit lf.X0[0, 0]
+        p = self.X0[0, 0]
         e = self.X0[0, 1]
         a = p / (1. - e**2)
         Mdot = (self.mu / a**3)**.5

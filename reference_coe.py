@@ -3,7 +3,7 @@
 @author: Nathan Budd
 """
 from .reference_abstract import ReferenceAbstract
-from orbit.orbit import Orbit
+from orbit import M2f
 
 
 class ReferenceCOE(ReferenceAbstract):
@@ -27,7 +27,7 @@ class ReferenceCOE(ReferenceAbstract):
         An mxn array of reference states.
         """
         X_ref_M = super().__call__(T)
-        X = Orbit(self.mu).M2f_ellipse(X_ref_M)
+        X = M2f(X_ref_M)
         return X
 
 

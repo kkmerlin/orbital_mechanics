@@ -18,6 +18,8 @@ class ModelMEE(ModelAbstract):
 
     def __init__(self, mu):
         """."""
+        print('THIS NEEDS TO BE UPDATED TO USE MEAN ANGULAR RATE PROPERLY')
+        print('SEE MODEL_COE.PY AS AN EXAMPLE')
         self.mu = mu
         super().__init__()
 
