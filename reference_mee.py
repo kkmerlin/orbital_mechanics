@@ -3,7 +3,7 @@
 @author: Nathan Budd
 """
 from .reference_abstract import ReferenceAbstract
-from .model_mee import ModelMEE
+#from .model_mee_mean_something import ModelMEEMeanSomething
 
 
 class ReferenceMEE(ReferenceAbstract):
@@ -11,7 +11,7 @@ class ReferenceMEE(ReferenceAbstract):
 
     def __init__(self, X0, mu):
         """."""
-        super().__init__(X0, ModelMEE(mu))
+        super().__init__(X0, ModelMEEMeanSomething(mu))
 
     def __repr__(self):
         """Printable represenation of the object."""

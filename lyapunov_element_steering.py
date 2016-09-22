@@ -37,6 +37,7 @@ class LyapunovElementSteering(ModelAbstract):
         self.W = W
         self.a_t = a_t
         self.Xref = Xref
+        self.u = np.zeros(())
         super().__init__()
 
     def __call__(self, T, X):
@@ -50,6 +51,7 @@ class LyapunovElementSteering(ModelAbstract):
         Eta = X - self.Xref(T)
 
         U = np.zeros(X.shape)
+        self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             c = eta * self.W * G[i]
@@ -58,6 +60,7 @@ class LyapunovElementSteering(ModelAbstract):
             except RuntimeWarning:
                 u = np.zeros(c.T.shape)
 
+            self.u[i] = u.T
             U[i] = (self.a_t * np.dot(G[i], u)).T
 
         self.Xdot = U

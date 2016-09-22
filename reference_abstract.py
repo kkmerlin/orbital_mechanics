@@ -9,23 +9,25 @@ import numpy as np
 class ReferenceAbstract(metaclass=ABCMeta):
     """Abstract class for generating reference trajectories with COEs or MEEs.
 
+    Creates an osculating two-body reference trajectory out of the initial
+    state.
+
     Instance Members
     ----------------
     X0 : np.array
     A 1xn array of initial states.
 
-    model : ModelCOE or ModelMEE object
-    Holds the dynamics that will be used to generate the reference trajectory's
-    constant derivative.
+    mu : float
+    Standard gravitational parameter.
     """
 
-    def __init__(self, X0, model):
+    def __init__(self, X0, mu):
         """."""
         self.X0 = X0
-        self.model = model
+        self.mu = mu
 
     def __call__(self, T):
-        """Generate reference trajectory.
+        """Generate reference trajectory in terms of mean anomaly.
 
         Input
         -----
@@ -34,23 +36,27 @@ class ReferenceAbstract(metaclass=ABCMeta):
 
         Output
         ------
-        X : np.array
+        X : ndarray
         An mxn array of reference states.
         """
-        T0 = T[0]
-        Xdot = self.model.__call__(T0, self.X0)
+        T0 = T[0, 0]
+        p = segit lf.X0[0, 0]
+        e = self.X0[0, 1]
+        a = p / (1. - e**2)
+        Mdot = (self.mu / a**3)**.5
 
         dT = T - T0
-        dX = np.dot(dT, Xdot)
-        X = np.ones(T0.shape) * self.X0 + dX
+        dM = dT * Mdot
+        X_ref = np.tile(self.X0, T.shape)
+        X_ref[0:, -1:] = X_ref[0:, -1:] + dM
 
-        return X
+        return X_ref
 
-        def repr(self, class_name):
+        def __repr__(self, class_name):
             """Printable represenation of the object."""
             return class_name+'({}, {})'.format(self.X0, self.model)
 
-        def str(self):
+        def __str__(self):
             """Human readable represenation of the object."""
             output = class_name
             output += '(X0={}, model={})'.format(self.X0, self.model)

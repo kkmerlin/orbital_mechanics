@@ -3,7 +3,7 @@
 @author: Nathan Budd
 """
 from .reference_abstract import ReferenceAbstract
-from .model_coe import ModelCOE
+from orbit.orbit import Orbit
 
 
 class ReferenceCOE(ReferenceAbstract):
@@ -11,7 +11,25 @@ class ReferenceCOE(ReferenceAbstract):
 
     def __init__(self, X0, mu):
         """."""
-        super().__init__(X0, ModelCOE(mu))
+        super().__init__(X0, mu)
+
+    def __call__(self, T):
+        """Generate reference trajectory in terms of true anomaly.
+
+        Input
+        -----
+        T : np.array
+        An mx1 column array of times.
+
+        Output
+        ------
+        X : ndarray
+        An mxn array of reference states.
+        """
+        X_ref_M = super().__call__(T)
+        X = Orbit(self.mu).M2f_ellipse(X_ref_M)
+        return X
+
 
     def __repr__(self):
         """Printable represenation of the object."""
