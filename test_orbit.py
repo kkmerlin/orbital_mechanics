@@ -5,7 +5,7 @@
 import unittest
 from math import pi
 import numpy as np
-from .orbit import Orbit
+import orbit as orb
 
 
 class TestOrbit(unittest.TestCase):
@@ -20,8 +20,7 @@ class TestOrbit(unittest.TestCase):
         M = np.linspace(0, 2*pi, 10).reshape((10, 1))
         coe_M = np.concatenate((coe_no_M, M), 1)
 
-        orb = Orbit(1.)
-        coe_f = orb.M2f_ellipse(coe_M)
+        coe_f = orb.M2f(coe_M)
         self.assertEqual(coe_f[0, -1], 0.)
 
     def test_M2E(self):
@@ -30,7 +29,6 @@ class TestOrbit(unittest.TestCase):
         M = np.linspace(0, 2*pi, 10).reshape((10, 1))
         coe_M = np.concatenate((coe_no_M, M), 1)
 
-        orb = Orbit(1.)
         coe_E = orb.M2E(coe_M)
         self.assertEqual(coe_E[0, -1], 0.)
 
@@ -40,6 +38,5 @@ class TestOrbit(unittest.TestCase):
         E = np.linspace(0, 2*pi, 10).reshape((10, 1))
         coe_E = np.concatenate((coe_no_E, E), 1)
 
-        orb = Orbit(1.)
         coe_f = orb.E2f(coe_E)
         self.assertEqual(coe_f[0, -1], 0.)
