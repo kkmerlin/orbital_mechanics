@@ -37,6 +37,7 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
         self.W = W
         self.a_t = a_t
         self.Xref = Xref
+        self.u = np.zeros(())
         super().__init__()
 
     def __call__(self, T, X):
@@ -50,10 +51,10 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
         Eta = X - self.Xref(T)
 
         U = np.zeros(X.shape)
+        self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             # solve for the optimal unit vector direction
-            import pdb;pdb.set_trace()
             c = self.a_t * np.dot(eta, np.dot(self.W, G[i]))
             alpha1 = atan2(c[0, 1], c[0, 0])
             ca1 = cos(alpha1)
@@ -61,9 +62,10 @@ class LyapunovElementSteeringOptimal(ModelAbstract):
             alpha2 = atan2((c[0, 0]*ca1 + c[0, 1]*sa1), c[0, 2])
             ca2 = cos(alpha2)
             sa2 = sin(alpha2)
-            u = np.array([[ca1*sa2], [sa1*sa2], [ca2]])
+            u = -np.array([[ca1*sa2], [sa1*sa2], [ca2]])
 
-            U[i, :] = self.a_t * (G[i] * u).T
+            self.u[i] = u.T
+            U[i, :] = np.dot(self.a_t, np.dot(G[i], u).T)
 
         self.Xdot = U
         return U

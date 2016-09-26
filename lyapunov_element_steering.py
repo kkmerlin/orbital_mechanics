@@ -10,34 +10,47 @@ from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
 
 
 class LyapunovElementSteering(ModelAbstract):
-    """Lyapunov control for orbital elements, neglecting phase angle.
+    """
+    Lyapunov control for orbital elements, neglecting phase angle.
 
     Phase angle element must be the last (6th) state listed.
 
-    Instance Members
-    ----------------
+    Members
+    -------
     mu : float
-    Standard gravitational parameter
-
-    W : numpy.array
-    Diagonal nxn weight array, where n is the state dimension.
-
+        Standard gravitational parameter
+    W : ndarray
+        Diagonal nxn weight array, where n is the state dimension.
     a_t : float
-    Thrust magnitude
-
-    Xref : ReferenceCOE or ReferenceMEE object
-    Can be called with input T (an mx1 numpy.array) to produce a reference
-    trajectory, X (mxn numpy.array) of reference states, where n is the state
-    dimension defined by the Xref.model attribute.
+        Thrust magnitude
+    Xref : callable
+        Can be called with input T (an mx1 numpy.array) to produce a reference
+        trajectory, X (mxn numpy.array) of reference states, where n is the
+        state dimension defined by the Xref.model attribute.
+    model : callable
+        Can be called with input T (an mx1 numpy.array) and X (mxn numpy.array)
+        to produce state derivatives for this element set.
+    u : ndarray
+        Cartesian control history mx3 where m is the number of samples and 3 is
+        the control dimension.
+    V : ndarray
+        Most recent Lyapunov function trajectory, mx1 where m is the number of
+        samples.
+    Vdot : ndarray
+        Most recent Lyapunov function derivative history, mx1 where m is the
+        number of samples.
     """
 
-    def __init__(self, mu, W, a_t, Xref):
+    def __init__(self, mu, W, a_t, Xref, model):
         """."""
         self.mu = mu
         self.W = W
         self.a_t = a_t
         self.Xref = Xref
+        self.model = model
         self.u = np.zeros(())
+        self.V = np.zeros(())
+        self.Vdot = np.zeros(())
         super().__init__()
 
     def __call__(self, T, X):
@@ -48,10 +61,18 @@ class LyapunovElementSteering(ModelAbstract):
         See dynamics_abstract.py for more details.
         """
         G = GLPE(self.mu).coe(X)
-        Eta = X - self.Xref(T)
+        Xref = self.Xref(T)
+        Eta = X - Xref
+
+        Xdot = self.model(T, X)
+        Xrefdot = self.model(T, Xref)
+        Etadot = np.zeros((X.shape))
+        Etadot[0:, -1:] = Xdot[0:, -1:] - Xrefdot[0:, -1:]
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
+        self.V = np.zeros((X.shape[0], 1))
+        self.Vdot = np.zeros((X.shape[0], 1))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             c = eta * self.W * G[i]
@@ -61,6 +82,9 @@ class LyapunovElementSteering(ModelAbstract):
                 u = np.zeros(c.T.shape)
 
             self.u[i] = u.T
+            self.V[i] = eta.dot(self.W).dot(eta.T)
+            self.Vdot[i] = eta.dot(self.W).dot(
+                Etadot[i:i+1, 0:].T + self.a_t * G[i].dot(u))
             U[i] = (self.a_t * np.dot(G[i], u)).T
 
         self.Xdot = U
