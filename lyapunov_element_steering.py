@@ -24,12 +24,16 @@ class LyapunovElementSteering(ModelAbstract):
     a_t : float
         Thrust magnitude
     Xref : callable
-        Can be called with input T (an mx1 numpy.array) to produce a reference
-        trajectory, X (mxn numpy.array) of reference states, where n is the
-        state dimension defined by the Xref.model attribute.
+        Can be called with input T (an mx1 ndarray) to produce a reference
+        trajectory, X (mxn ndarray), where n is the state dimension defined by
+        the Xref.model attribute.
     model : callable
-        Can be called with input T (an mx1 numpy.array) and X (mxn numpy.array)
+        Can be called with input T (an mx1 ndarray) and X (mxn ndarray)
         to produce state derivatives for this element set.
+    glpe : callable
+        Can be called with input X (mxn ndarray) to produce a list of ndarrays
+        representing the Gauss's form of Lagrange's Planetary Equations for
+        each passed state.
     u : ndarray
         Cartesian control history mx3 where m is the number of samples and 3 is
         the control dimension.
@@ -41,13 +45,14 @@ class LyapunovElementSteering(ModelAbstract):
         number of samples.
     """
 
-    def __init__(self, mu, W, a_t, Xref, model):
+    def __init__(self, mu, W, a_t, Xref, model, glpe):
         """."""
         self.mu = mu
         self.W = W
         self.a_t = a_t
         self.Xref = Xref
         self.model = model
+        self.glpe = glpe
         self.u = np.zeros(())
         self.V = np.zeros(())
         self.Vdot = np.zeros(())
@@ -60,7 +65,7 @@ class LyapunovElementSteering(ModelAbstract):
 
         See dynamics_abstract.py for more details.
         """
-        G = GLPE(self.mu).coe(X)
+        G = self.glpe(X)
         Xref = self.Xref(T)
         Eta = X - Xref
 
@@ -83,8 +88,8 @@ class LyapunovElementSteering(ModelAbstract):
 
             self.u[i] = u.T
             self.V[i] = eta.dot(self.W).dot(eta.T)
-            self.Vdot[i] = eta.dot(self.W).dot(
-                Etadot[i:i+1, 0:].T + self.a_t * G[i].dot(u))
+            self.Vdot[i] = eta @ self.W @ (Etadot[i:i+1, 0:].T + self.a_t *
+                                           G[i] @ u)
             U[i] = (self.a_t * np.dot(G[i], u)).T
 
         self.Xdot = U
@@ -92,12 +97,12 @@ class LyapunovElementSteering(ModelAbstract):
 
         def __repr__(self):
             """Printable represenation of the object."""
-            return 'LyapunovElementSteering({}, {}, {}, {})'.format(
-                self.mu, self.W, self.a_t, self.Xref)
+            return 'LyapunovElementSteering({}, {}, {}, {}, {})'.format(
+                self.mu, self.W, self.a_t, self.Xref, self.glpe)
 
         def __str__(self):
             """Human readable represenation of the object."""
             output = 'LyapunovElementSteering'
-            output += '(mu={}, W={}, a_t={}, Xref={})'.format(
-                self.mu, self.W, self.a_t, self.Xref)
+            output += '(mu={}, W={}, a_t={}, Xref={}, glpe={})'.format(
+                self.mu, self.W, self.a_t, self.Xref, self.glpe)
             return output

@@ -8,7 +8,9 @@ from .model_abstract import ModelAbstract
 
 
 class WarmStartConstant(ModelAbstract):
-    """Warm start that returns the initial condition at all times t."""
+    """
+    Return the initial condition at all times t.
+    """
     def __init__(self):
         """."""
         super().__init__()
