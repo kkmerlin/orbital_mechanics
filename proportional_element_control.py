@@ -63,6 +63,7 @@ class ProportionalElementControl(ModelAbstract):
         for i, eta in enumerate(Eta):
             self.u[i] = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @
                          self.K @ eta)
+
             U[i] = (self.a_t * G[i] @ self.u[i]).T
 
         self.Xdot = U
