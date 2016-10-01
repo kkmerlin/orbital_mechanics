@@ -6,7 +6,8 @@ import numpy as np
 import numpy.linalg as npl
 from math import sin, cos, atan2
 from .model_abstract import ModelAbstract
-from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
+from orbit import diff_elements
+from dynamics import diff_elements_theta_into_p
 
 
 class LyapunovElementSteering(ModelAbstract):
@@ -67,7 +68,10 @@ class LyapunovElementSteering(ModelAbstract):
         """
         G = self.glpe(X)
         Xref = self.Xref(T)
-        Eta = X - Xref
+        k = 1e-4
+        # Eta = diff_elements_theta_into_p(self.mu, k, X, Xref,
+        #                                  angle_idx=[2, 3, 4, 5])
+        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
 
         Xdot = self.model(T, X)
         Xrefdot = self.model(T, Xref)
@@ -80,17 +84,17 @@ class LyapunovElementSteering(ModelAbstract):
         self.Vdot = np.zeros((X.shape[0], 1))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
-            c = eta * self.W * G[i]
+            c = (eta @ self.W @ G[i]).reshape((3, 1))
             try:
-                u = - c.T / npl.norm(c)
+                u = - c / npl.norm(c)
             except RuntimeWarning:
-                u = np.zeros(c.T.shape)
+                u = np.zeros(c.shape)
 
             self.u[i] = u.T
             self.V[i] = eta.dot(self.W).dot(eta.T)
             self.Vdot[i] = eta @ self.W @ (Etadot[i:i+1, 0:].T + self.a_t *
                                            G[i] @ u)
-            U[i] = (self.a_t * np.dot(G[i], u)).T
+            U[i:i+1] = (self.a_t * G[i] @ u).T
 
         self.Xdot = U
         return U

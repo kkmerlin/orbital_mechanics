@@ -1,3 +1,4 @@
+from .diff_elements_theta_into_p import diff_elements_theta_into_p
 from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns
 from .lyapunov_element_steering import LyapunovElementSteering
 from .model_coe import ModelCOE

@@ -7,7 +7,8 @@ from numpy import dot
 import numpy.linalg as npl
 from math import sin, cos, atan2
 from .model_abstract import ModelAbstract
-from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns as GLPE
+from orbit import diff_elements
+from .diff_elements_theta_into_p import diff_elements_theta_into_p
 
 
 class ProportionalElementControl(ModelAbstract):
@@ -56,13 +57,21 @@ class ProportionalElementControl(ModelAbstract):
         """
         G = self.glpe(X)
         Xref = self.Xref(T)
-        Eta = X - Xref
+        k = 1e-4
+        # Eta = diff_elements_theta_into_p(self.mu, k, X, Xref,
+        #                                  angle_idx=[2, 3, 4, 5])
+        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
-            self.u[i] = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @
-                         self.K @ eta)
+            u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @
+                 self.K @ eta)
+            u_norm = npl.norm(u)
+            if u_norm > 1.:
+                self.u[i] = u / u_norm
+            else:
+                self.u[i] = u
 
             U[i] = (self.a_t * G[i] @ self.u[i]).T
 
