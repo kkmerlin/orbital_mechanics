@@ -11,3 +11,4 @@ from .reference_mee import ReferenceMEE
 from .system_dynamics import SystemDynamics
 from .thrust_constant import ThrustConstant
 from .warm_start_constant import WarmStartConstant
+from .zonal_gravity import ZonalGravity

@@ -30,7 +30,6 @@ class ReferenceCOE(ReferenceAbstract):
         X = M2f(X_ref_M)
         return X
 
-
     def __repr__(self):
         """Printable represenation of the object."""
         return super().repr('ReferenceCOE')
