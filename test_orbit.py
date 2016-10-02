@@ -55,7 +55,7 @@ class TestOrbit(unittest.TestCase):
         MEE_2 = orb.rv2mee(RV)
 
         MEE_diff = MEE_1 - MEE_2
-        print(MEE_diff);import pdb;pdb.set_trace()
+        print(MEE_diff)
 
         self.assertTrue((np.fabs(MEE_diff) < tol).all())
 
@@ -141,3 +141,28 @@ class TestOrbit(unittest.TestCase):
         print(RV_diff)
 
         self.assertTrue((np.fabs(RV_diff) < tol).all())
+
+    def test_euler_sequence(self):
+        tol = 1e-14
+
+        axes = [1, 2, 3]
+        a = np.array([[np.pi/2], [0.], [0.]])
+        b = np.array([[0.], [np.pi/2], [0.]])
+        c = np.array([[0.], [0.], [np.pi/2]])
+
+        C = orb.euler_sequence(axes, *[a, b, c])
+        print(C)
+
+        C0 = np.array([[1., 0., 0.],
+                       [0., 0., 1.],
+                       [0., -1., 0.]])
+        C1 = np.array([[0., 0., -1.],
+                       [0., 1., 0.],
+                       [1., 0., 0.]])
+        C2 = np.array([[0., 1., 0.],
+                       [-1., 0., 0.],
+                       [0., 0., 1.]])
+        result = (np.fabs(C[0] - C0) < tol).all()
+        result = result and (np.fabs(C[1] - C1) < tol).all()
+        result = result and (np.fabs(C[2] - C2) < tol).all()
+        self.assertTrue(result)
