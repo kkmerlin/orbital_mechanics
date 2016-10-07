@@ -57,16 +57,25 @@ class ProportionalElementControl(ModelAbstract):
         """
         G = self.glpe(X)
         Xref = self.Xref(T)
-        k = 1e-4
-        # Eta = diff_elements_theta_into_p(self.mu, k, X, Xref,
-        #                                  angle_idx=[2, 3, 4, 5])
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
+        # k = 100.
+        # Eta = diff_elements_theta_into_p(self.mu, k,
+        #                                  X, Xref, angle_idx=[2, 3, 4, 5])
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
+            K = np.eye(6)
+            eta_trimmed = np.trim_zeros(np.sort(np.absolute(eta[0:5])))
+            mean_exponent = np.mean(np.log10(eta_trimmed))
+            try:
+                K[5, 5] = mean_exponent / eta[5]
+            except RuntimeWarning:  # if eta[5] is zero
+                K[5, 5] = mean_exponent
+
             u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @
                  self.K @ eta)
+            # u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ K @ eta)
             u_norm = npl.norm(u)
             if u_norm > 1.:
                 self.u[i] = u / u_norm

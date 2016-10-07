@@ -68,15 +68,11 @@ class LyapunovElementSteering(ModelAbstract):
         """
         G = self.glpe(X)
         Xref = self.Xref(T)
-        k = 1e-4
-        # Eta = diff_elements_theta_into_p(self.mu, k, X, Xref,
-        #                                  angle_idx=[2, 3, 4, 5])
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
 
         Xdot = self.model(T, X)
         Xrefdot = self.model(T, Xref)
-        Etadot = np.zeros((X.shape))
-        Etadot[0:, -1:] = Xdot[0:, -1:] - Xrefdot[0:, -1:]
+        Etadot = Xdot - Xrefdot
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
@@ -84,14 +80,11 @@ class LyapunovElementSteering(ModelAbstract):
         self.Vdot = np.zeros((X.shape[0], 1))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
-            c = (eta @ self.W @ G[i]).reshape((3, 1))
-            try:
-                u = - c / npl.norm(c)
-            except RuntimeWarning:
-                u = np.zeros(c.shape)
+            c = (eta @ self.W @ G[i]).reshape((1, 3))
+            u = - c.T / npl.norm(c)
 
             self.u[i] = u.T
-            self.V[i] = eta.dot(self.W).dot(eta.T)
+            self.V[i] = eta @ self.W @ eta.T
             self.Vdot[i] = eta @ self.W @ (Etadot[i:i+1, 0:].T + self.a_t *
                                            G[i] @ u)
             U[i:i+1] = (self.a_t * G[i] @ u).T
