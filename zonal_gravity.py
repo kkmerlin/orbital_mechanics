@@ -9,7 +9,7 @@ from orbit import coe2rv
 from orbit import mee2rv
 from orbit import mee2coe
 from orbit import euler_sequence
-from .gauss_lagrange_planetary_eqns import GaussLagrangePlanetaryEqns
+from dynamics import GaussVariationalEqns
 from multiplot2d import MultiPlotter
 
 
@@ -99,7 +99,7 @@ class ZonalGravity(ModelAbstract):
             w = X[0:, 4:5]
             f = X[0:, 5:6]
 
-            G = GaussLagrangePlanetaryEqns(self.mu).coe(X)
+            G = GaussVariationalEqns(self.mu).coe(X)
 
         elif self.elements is 'mee':
             COE = mee2coe(X)

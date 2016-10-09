@@ -3,15 +3,16 @@
 @author: Nathan Budd
 """
 import numpy as np
+import numpy.linalg as npl
 from math import cos, sin
 
 
-class GaussLagrangePlanetaryEqns():
-    """Generate the Gauss-Lagrange Planetary Equations.
+class GaussVariationalEqns():
+    """Generate the Gauss Variational Equations.
 
-    A collection of methods for Gauss's form of Lagrange's Planetary Equations
+    A collection of methods for the Gauss Variational Equations
     in different element sets. A set of state histories is passed as input, and
-    the output is a list of state transition matrices, mapping LVLH frame
+    the output is a list of GVE matrices, mapping LVLH frame
     accelerations into orbital element derivatives.
 
     Instance Members
@@ -25,17 +26,17 @@ class GaussLagrangePlanetaryEqns():
         self.mu = mu
 
     def mee(self, X):
-        """Gauss's form of Lagrange's Planetary Equations for MEEs.
+        """Gauss Variational Equations for MEEs.
 
         Input
         -----
-        X : numpy.array
+        X : ndarray
         Time history array (mx6) of MEE [p f g h k L], where
         m is the number of samples.
 
         Output
         ------
-        G : numpy.array
+        G : ndarray
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
@@ -65,17 +66,17 @@ class GaussLagrangePlanetaryEqns():
         return G
 
     def coe(self, X):
-        """Gauss's form of Lagrange's Planetary Equations for COEs.
+        """Gauss Variational Equations for COEs.
 
         Input
         -----
-        X : numpy.array
+        X : ndarray
         Time history array (mx6) of COE [p e i W w f], where
         m is the number of samples.
 
         Output
         ------
-        G : numpy.array
+        G : ndarray
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
@@ -114,10 +115,39 @@ class GaussLagrangePlanetaryEqns():
             G[k][5] = fdot
         return G
 
+    def rv(self, X):
+        """Gauss Variational Equations for RV.
+
+        Input
+        -----
+        X : ndarray
+        Time history array (mx6) of COE [p e i W w f], where
+        m is the number of samples.
+
+        Output
+        ------
+        G : ndarray
+        A 6x3 array of each element's time derivative as a result of
+        disturbances in the r, theta, and angular momentum directions.
+        """
+        G = [np.zeros((6, 3)) for x in X]
+        for k, x in enumerate(X):
+            r = x[0:3].reshape((3, 1))
+            v = x[3:6].reshape((3, 1))
+            h = np.cross(r, v)
+
+            i_r = r / npl.norm(r)
+            i_h = h / npl.norm(h)
+            i_theta = np.cross(i_h, i_r)
+
+            G[k][3:6, 0:] = np.concatenate((i_r, i_theta, i_h), 1)
+
+        return G
+
         def __repr__(self):
             """Printable represenation of the object."""
-            return 'GaussLagrangePlanetaryEqns({})'.format(self.mu)
+            return 'GaussVariationalEqns({})'.format(self.mu)
 
         def __str__(self):
             """Human readable represenation of the object."""
-            return 'GaussLagrangePlanetaryEqns(mu={})'.format(self.mu)
+            return 'GaussVariationalEqns(mu={})'.format(self.mu)

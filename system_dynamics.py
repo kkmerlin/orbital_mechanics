@@ -3,7 +3,6 @@
 @author: Nathan Budd
 """
 from .model_abstract import ModelAbstract
-from .perturb_zero import PerturbZero
 
 
 class SystemDynamics(ModelAbstract):
@@ -17,12 +16,12 @@ class SystemDynamics(ModelAbstract):
     control : ModelAbstract subclass
     Represents the system control.
 
-    preturbations : list of ModelAbstract subclasses
+    preturbations : list of (or single) ModelAbstract subclasses
     Represent perturbations acting on the system.
     """
 
-    def __init__(self, plant, control=PerturbZero(),
-                 perturbations=[PerturbZero()]):
+    def __init__(self, plant, control=None,
+                 perturbations=None):
         """."""
         self.plant = plant
         self.control = control
@@ -45,9 +44,17 @@ class SystemDynamics(ModelAbstract):
         Xdot : np.array
         An mxn array of state derivatives
         """
-        Xdot = self.plant(T, X) + self.control(T, X)
-        for perturb in self.perturbations:
-            Xdot = Xdot + perturb(T, X)
+        Xdot = self.plant(T, X)
+
+        if self.control is not None:
+            Xdot += self.control(T, X)
+
+        if self.perturbations is not None:
+            if isinstance(self.perturbations, list):
+                for perturb in self.perturbations:
+                    Xdot = Xdot + perturb(T, X)
+            else:
+                Xdot += self.perturbations(T, X)
 
         self.Xdot = Xdot
         return Xdot
