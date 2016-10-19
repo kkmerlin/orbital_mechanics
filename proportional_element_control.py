@@ -67,15 +67,15 @@ class ProportionalElementControl(ModelAbstract):
         for i, eta in enumerate(Eta):
             K = np.eye(6)
             eta_trimmed = np.trim_zeros(np.sort(np.absolute(eta[0:5])))
-            mean_exponent = np.mean(np.log10(eta_trimmed))
+            max_exponent = np.max(np.log10(eta_trimmed))
             try:
-                K[5, 5] = mean_exponent / eta[5]
+                exponent_5 = max_exponent  # - np.log10(eta[5])
             except RuntimeWarning:  # if eta[5] is zero
-                K[5, 5] = mean_exponent
+                exponent_5 = max_exponent
+            K[5, 5] = np.power(10., exponent_5+1)
 
-            u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @
-                 self.K @ eta)
-            # u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ K @ eta)
+            # u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ self.K @ eta)
+            u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ K @ eta)
             u_norm = npl.norm(u)
             if u_norm > 1.:
                 self.u[i] = u / u_norm
