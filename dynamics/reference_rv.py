@@ -1,4 +1,4 @@
-"""Created on Sun Sep 11 2015 17:31.
+"""Created on Sun Oct 23 2015 12:53.
 
 @author: Nathan Budd
 """
@@ -6,8 +6,8 @@ from .reference_abstract import ReferenceAbstract
 from ..orbit import M2f
 
 
-class ReferenceCOE(ReferenceAbstract):
-    """Class for generating reference trajectories with COEs."""
+class ReferenceRV(ReferenceAbstract):
+    """Class for generating reference trajectories with RV."""
 
     def __init__(self, X0, mu):
         """."""

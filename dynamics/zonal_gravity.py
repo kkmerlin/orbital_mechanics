@@ -5,11 +5,11 @@
 import numpy as np
 import numpy.linalg as npl
 from .model_abstract import ModelAbstract
-from orbit import coe2rv
-from orbit import mee2rv
-from orbit import mee2coe
-from orbit import euler_sequence
-from dynamics import GaussVariationalEqns
+from ..orbit import coe2rv
+from ..orbit import mee2rv
+from ..orbit import mee2coe
+from ..orbit import euler_sequence
+from .gauss_variational_eqns import GaussVariationalEqns
 from multiplot2d import MultiPlotter
 
 

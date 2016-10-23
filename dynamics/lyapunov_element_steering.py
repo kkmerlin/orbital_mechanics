@@ -6,8 +6,7 @@ import numpy as np
 import numpy.linalg as npl
 from math import sin, cos, atan2
 from .model_abstract import ModelAbstract
-from orbit import diff_elements
-from dynamics import diff_elements_theta_into_p
+from ..orbit import diff_elements
 
 
 class LyapunovElementSteering(ModelAbstract):

@@ -36,7 +36,7 @@ class GaussVariationalEqns():
 
         Output
         ------
-        G : ndarray
+        G : list of ndarray
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
@@ -76,7 +76,7 @@ class GaussVariationalEqns():
 
         Output
         ------
-        G : ndarray
+        G : list of ndarray
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
@@ -126,7 +126,7 @@ class GaussVariationalEqns():
 
         Output
         ------
-        G : ndarray
+        G : list of ndarray
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
