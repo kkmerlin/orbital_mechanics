@@ -1,12 +1,12 @@
-"""Created on Thu Sep 22 2015 14:54.
+"""Created on Sun Oct 23 2015 16:23.
 
 @author: Nathan Budd
 """
 import numpy as np
 
 
-def E2f(coe_E):
-    """Convert eccentric anomaly, E, to true anomaly, f.
+def E2M(coe_E):
+    """Convert eccentric anomaly, E, to elliptic mean anomaly, M.
 
     Input
     -----
@@ -16,12 +16,13 @@ def E2f(coe_E):
 
     Output
     ------
-    coe_f : ndarray
-    mx6 array of classical orbital elements [p e i W w f]. m is the number
+    coe_M : ndarray
+    mx6 array of classical orbital elements [p e i W w M]. m is the number
     of samples and 6 is the dimension of the element set.
     """
     e = coe_E[0:, 1:2]
     E = coe_E[0:, -1:]
-    tan_f_by_2 = ((1.+e)/(1.-e))**.5 * np.tan(E/2)
-    f = 2 * np.arctan(tan_f_by_2)
-    return np.concatenate((coe_E[0:, 0:-1], f), 1)
+
+    M = E - e*np.sin(E)
+
+    return np.concatenate((coe_E[0:, 0:-1], M), 1)

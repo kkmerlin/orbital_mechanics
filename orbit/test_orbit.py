@@ -6,7 +6,7 @@ import unittest
 from math import pi
 import numpy as np
 import numpy.random as npr
-import ..orbit as orb
+from .. import orbit as orb
 from .diff_elements import diff_elements
 
 
@@ -166,3 +166,45 @@ class TestOrbit(unittest.TestCase):
         result = result and (np.fabs(C[1] - C1) < tol).all()
         result = result and (np.fabs(C[2] - C2) < tol).all()
         self.assertTrue(result)
+
+    def test_f2E2f(self):
+        tol = 1e-9
+
+        m = 10000
+        p = npr.rand(m, 1) * 10
+        e = npr.rand(m, 1)
+        i = npr.rand(m, 1) * np.pi
+        W = npr.rand(m, 1) * 2*np.pi
+        w = npr.rand(m, 1) * 2*np.pi
+        f = npr.rand(m, 1) * 2*np.pi
+        COE_f0 = np.concatenate((p, e, i, W, w, f), 1)
+
+        COE_E = orb.f2E(COE_f0)
+
+        COE_f1 = orb.E2f(COE_E)
+
+        RV_diff = diff_elements(COE_f0, COE_f1, angle_idx=[2, 3, 4, 5])
+        print(RV_diff)
+
+        self.assertTrue((np.fabs(RV_diff) < tol).all())
+
+    def test_M2E2M(self):
+        tol = 1e-9
+
+        m = 10000
+        p = npr.rand(m, 1) * 10
+        e = npr.rand(m, 1)
+        i = npr.rand(m, 1) * np.pi
+        W = npr.rand(m, 1) * 2*np.pi
+        w = npr.rand(m, 1) * 2*np.pi
+        M = npr.rand(m, 1) * 2*np.pi
+        COE_M0 = np.concatenate((p, e, i, W, w, M), 1)
+
+        COE_E = orb.M2E(COE_M0)
+
+        COE_M1 = orb.E2M(COE_E)
+
+        RV_diff = diff_elements(COE_M0, COE_M1, angle_idx=[2, 3, 4, 5])
+        print(RV_diff)
+
+        self.assertTrue((np.fabs(RV_diff) < tol).all())

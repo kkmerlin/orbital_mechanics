@@ -28,7 +28,7 @@ def M2E(coe_M):
 
     while np.max(np.absolute(E1 - E0)) > tol:
         E0 = E1
-        E1 = E0 - (M - E0 + e*np.sin(E0)) / (-1. + e*np.cos(E0))
+        E1 = E0 + (M - E0 + e*np.sin(E0)) / (1. - e*np.cos(E0))
 
     coe_E = np.concatenate((coe_M[0:, 0:-1], E1), 1)
     return coe_E

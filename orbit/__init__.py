@@ -2,7 +2,10 @@ from .coe2mee import coe2mee
 from .coe2rv import coe2rv
 from .diff_elements import diff_elements
 from .E2f import E2f
+from .E2M import E2M
 from .euler_sequence import euler_sequence
+from .f2E import f2E
+from .f2M import f2M
 from .M2E import M2E
 from .M2f import M2f
 from .mee2coe import mee2coe
