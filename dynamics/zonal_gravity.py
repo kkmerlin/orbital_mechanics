@@ -9,7 +9,7 @@ from ..orbit import coe2rv
 from ..orbit import mee2rv
 from ..orbit import mee2coe
 from ..orbit import euler_sequence
-from .gauss_variational_eqns import GaussVariationalEqns
+from .utilities import GaussVariationalEqns
 from multiplot2d import MultiPlotter
 
 

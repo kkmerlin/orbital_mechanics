@@ -2,26 +2,26 @@
 
 @author: Nathan Budd
 """
-from .model_abstract import ModelAbstract
 
 
-class SystemDynamics(ModelAbstract):
+class SystemDynamics():
     """Combines a plant model, control, and perturbations.
 
-    Instance Members
+    Plant, control, and perturbations are all callables which take inputs
+    (T, X) where T is an mx1 ndarray of sample times and X is an mxn ndarray
+    of sample states.
+
+    Members
     -------
-    plant : ModelAbstract subclass
-    Represents the simple, unperturbed system dynamics.
-
-    control : ModelAbstract subclass
-    Represents the system control.
-
-    preturbations : list of (or single) ModelAbstract subclasses
-    Represent perturbations acting on the system.
+    plant : callable
+        Represents the idealized unperturbed model.
+    control : callable
+        Represents the system control.
+    preturbations : callable or list of callables
+        Represent perturbations acting on the system.
     """
 
-    def __init__(self, plant, control=None,
-                 perturbations=None):
+    def __init__(self, plant, control=None, perturbations=None):
         """."""
         self.plant = plant
         self.control = control
@@ -31,18 +31,17 @@ class SystemDynamics(ModelAbstract):
     def __call__(self, T, X):
         """Evaluate the full system dynamics.
 
-        Input
-        -----
-        T : np.array
-        An mx1 column array of times.
+        Parameters
+        ----------
+        T : ndarray
+            An mx1 column array of times.
+        X : ndarray
+            An mxn array of states.
 
-        X : np.array
-        An mxn array of states.
-
-        Output
-        ------
-        Xdot : np.array
-        An mxn array of state derivatives
+        Returns
+        -------
+        Xdot : ndarray
+            An mxn array of state derivatives
         """
         Xdot = self.plant(T, X)
 

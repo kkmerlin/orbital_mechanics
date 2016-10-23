@@ -4,7 +4,7 @@
 """
 import numpy as np
 from .model_abstract import ModelAbstract
-from .gauss_variational_eqns import GaussVariationalEqns
+from .utilities import GaussVariationalEqns
 
 
 class ThrustConstant(ModelAbstract):

@@ -3,7 +3,7 @@
 @author: Nathan Budd
 """
 import numpy as np
-from ..orbit import diff_elements
+from ...orbit import diff_elements
 
 
 def diff_elements_theta_into_p(mu, k, X, X_r, angle_idx=[5]):
