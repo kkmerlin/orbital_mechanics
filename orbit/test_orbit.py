@@ -6,7 +6,7 @@ import unittest
 from math import pi
 import numpy as np
 import numpy.random as npr
-import orbit as orb
+import ..orbit as orb
 from .diff_elements import diff_elements
 
 
