@@ -6,6 +6,8 @@ import numpy as np
 import numpy.linalg as npl
 from math import sin, cos, atan2
 from ..orbit import diff_elements
+from .two_body import TwoBody
+from .utilities import GaussVariationalEqns
 
 
 class LyapunovElementSteering():
@@ -29,7 +31,7 @@ class LyapunovElementSteering():
     model : callable
         Can be called with input T (an mx1 ndarray) and X (mxn ndarray)
         to produce state derivatives for this element set.
-    glpe : callable
+    gve : callable
         Can be called with input X (mxn ndarray) to produce a list of ndarrays
         representing the Gauss's form of Lagrange's Planetary Equations for
         each passed state.
@@ -46,14 +48,22 @@ class LyapunovElementSteering():
         The most recently computed call output
     """
 
-    def __init__(self, mu, W, a_t, Xref, model, glpe):
-        """."""
+    def __init__(self, mu, W, a_t, element_set, X0):
+        """.
+
+        Parameters
+        ----------
+        element_set : string
+            See two_body.py for more details.
+        X0 : ndarray
+            See two_body.py for more details.
+        """
         self.mu = mu
         self.W = W
         self.a_t = a_t
-        self.Xref = Xref
-        self.model = model
-        self.glpe = glpe
+        self.Xref = TwoBody(mu, element_set, X0=X0)
+        self.model = TwoBody(mu, element_set)
+        self.gve = GaussVariationalEqns(mu, element_set)
         self.u = np.zeros(())
         self.V = np.zeros(())
         self.Vdot = np.zeros(())
@@ -66,7 +76,7 @@ class LyapunovElementSteering():
 
         See dynamics_abstract.py for more details.
         """
-        G = self.glpe(X)
+        G = self.gve(X)
         Xref = self.Xref(T)
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
 
@@ -95,11 +105,11 @@ class LyapunovElementSteering():
         def __repr__(self):
             """Printable represenation of the object."""
             return 'LyapunovElementSteering({}, {}, {}, {}, {})'.format(
-                self.mu, self.W, self.a_t, self.Xref, self.glpe)
+                self.mu, self.W, self.a_t, self.Xref, self.gve)
 
         def __str__(self):
             """Human readable represenation of the object."""
             output = 'LyapunovElementSteering'
             output += '(mu={}, W={}, a_t={}, Xref={}, glpe={})'.format(
-                self.mu, self.W, self.a_t, self.Xref, self.glpe)
+                self.mu, self.W, self.a_t, self.Xref, self.gve)
             return output

@@ -7,6 +7,8 @@ from numpy import dot
 import numpy.linalg as npl
 from orbital_mechanics.orbit import diff_elements
 from .utilities import diff_elements_theta_into_p
+from .utilities import GaussVariationalEqns
+from .two_body import TwoBody
 
 
 class ProportionalElementControl():
@@ -27,7 +29,7 @@ class ProportionalElementControl():
         Can be called with input T (an mx1 ndarray) to produce a reference
         trajectory, X (mxn ndarray), where n is the state dimension defined by
         the Xref.model attribute.
-    glpe : callable
+    gve : callable
         Can be called with input X (mxn ndarray) to produce a list of ndarrays
         representing the Gauss's form of Lagrange's Planetary Equations for
         each passed state.
@@ -38,13 +40,21 @@ class ProportionalElementControl():
         The most recently computed call output
     """
 
-    def __init__(self, mu, K, a_t, Xref, glpe):
-        """."""
+    def __init__(self, mu, K, a_t, element_set, X0):  # Xref, gve):
+        """.
+
+        Parameters
+        ----------
+        element_set : string
+            See two_body.py for more details.
+        X0 : ndarray
+            See two_body.py for more details.
+        """
         self.mu = mu
         self.K = K
         self.a_t = a_t
-        self.Xref = Xref
-        self.glpe = glpe
+        self.Xref = TwoBody(mu, element_set, X0=X0)
+        self.gve = GaussVariationalEqns(mu, element_set)
         self.u = np.zeros(())
         self.Xdot = np.array([[]])
 
@@ -55,7 +65,7 @@ class ProportionalElementControl():
 
         See dynamics_abstract.py for more details.
         """
-        G = self.glpe(X)
+        G = self.gve(X)
         Xref = self.Xref(T)
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
         # k = 100.
@@ -90,11 +100,11 @@ class ProportionalElementControl():
         def __repr__(self):
             """Printable represenation of the object."""
             return 'ProportionalElementControl({}, {}, {}, {}, {})'.format(
-                self.mu, self.K, self.a_t, self.Xref, self.glpe)
+                self.mu, self.K, self.a_t, self.Xref, self.gve)
 
         def __str__(self):
             """Human readable represenation of the object."""
             output = 'ProportionalElementControl'
-            output += '(mu={}, K={}, a_t={}, Xref={}, glpe={})'.format(
-                self.mu, self.K, self.a_t, self.Xref, self.glpe)
+            output += '(mu={}, K={}, a_t={}, Xref={}, gve={})'.format(
+                self.mu, self.K, self.a_t, self.Xref, self.gve)
             return output

@@ -18,14 +18,38 @@ class GaussVariationalEqns():
     Instance Members
     -------
     mu : float
-    The standard gravitational parameter
+        The standard gravitational parameter
+    element_set : string
+        See two_body.py for more details.
     """
 
-    def __init__(self, mu):
+    def __init__(self, mu, element_set):
         """."""
         self.mu = mu
+        self.element_set = element_set
 
-    def mee(self, X):
+    def __call__(self, X):
+        """Gauss Variational Equations
+
+        Input
+        -----
+        X : ndarray
+        Time history array (mx6) of elements, where
+        m is the number of samples.
+
+        Output
+        ------
+        G : list of ndarray
+        A 6x3 array of each element's time derivative as a result of
+        disturbances in the r, theta, and angular momentum directions.
+        """
+        G_funcs = dict(mee=self._mee,
+                       coe=self._coe,
+                       rv=self._rv)
+
+        return G_funcs[self.element_set](X)
+
+    def _mee(self, X):
         """Gauss Variational Equations for MEEs.
 
         Input
@@ -65,7 +89,7 @@ class GaussVariationalEqns():
             G[i] = np.array([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu
         return G
 
-    def coe(self, X):
+    def _coe(self, X):
         """Gauss Variational Equations for COEs.
 
         Input
@@ -115,7 +139,7 @@ class GaussVariationalEqns():
             G[k][5] = fdot
         return G
 
-    def rv(self, X):
+    def _rv(self, X):
         """Gauss Variational Equations for RV.
 
         Input
