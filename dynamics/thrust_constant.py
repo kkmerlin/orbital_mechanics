@@ -3,21 +3,21 @@
 @author: Nathan Budd
 """
 import numpy as np
-from .model_abstract import ModelAbstract
 from .utilities import GaussVariationalEqns
 
 
-class ThrustConstant(ModelAbstract):
+class ThrustConstant():
     """Output the result of a constant acceleration vector defined in LVLH.
 
     Instance Members
     ----------------
     vector : numpy.array
-    3x1 column vector representing the LVLH-constant acceleration applied.
-
+        3x1 column vector representing the LVLH-constant acceleration applied.
     gve : reference to GaussVariationalEqns.*element(X)
-    Takes the constant LVLH acceleration vector into state space time
-    derivatives.
+        Takes the constant LVLH acceleration vector into state space time
+        derivatives.
+    Xdot : ndarray
+        The most recently computed call output
     """
     def __init__(self, mu, vector, elements):
         """.
@@ -35,7 +35,7 @@ class ThrustConstant(ModelAbstract):
 
         self.vector = vector
         self.gve = gve[elements]
-        super().__init__()
+        self.Xdot = np.array([[]])
 
     def __call__(self, T, X):
         """Output the result of an LVLH-constant thrust vector.

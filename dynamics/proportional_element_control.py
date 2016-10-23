@@ -5,12 +5,11 @@
 import numpy as np
 from numpy import dot
 import numpy.linalg as npl
-from .model_abstract import ModelAbstract
 from orbital_mechanics.orbit import diff_elements
 from .utilities import diff_elements_theta_into_p
 
 
-class ProportionalElementControl(ModelAbstract):
+class ProportionalElementControl():
     """
     Proportional control for orbital element orbit transfer.
 
@@ -35,6 +34,8 @@ class ProportionalElementControl(ModelAbstract):
     u : ndarray
         Cartesian control history mx3 where m is the number of samples and 3 is
         the control dimension.
+    Xdot : ndarray
+        The most recently computed call output
     """
 
     def __init__(self, mu, K, a_t, Xref, glpe):
@@ -45,7 +46,7 @@ class ProportionalElementControl(ModelAbstract):
         self.Xref = Xref
         self.glpe = glpe
         self.u = np.zeros(())
-        super().__init__()
+        self.Xdot = np.array([[]])
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.

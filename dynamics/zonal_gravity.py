@@ -4,7 +4,6 @@
 """
 import numpy as np
 import numpy.linalg as npl
-from .model_abstract import ModelAbstract
 from ..orbit import coe2rv
 from ..orbit import mee2rv
 from ..orbit import mee2coe
@@ -13,7 +12,7 @@ from .utilities import GaussVariationalEqns
 from multiplot2d import MultiPlotter
 
 
-class ZonalGravity(ModelAbstract):
+class ZonalGravity():
     """
     Zonal gravity perturbations, J2 up to J6, in canonical units.
 
@@ -29,6 +28,8 @@ class ZonalGravity(ModelAbstract):
     elements : string
         Indicates the element set being used as input and output. Allowable
         values include: 'coe', 'mee'. Defaults to 'coe'.
+    Xdot : ndarray
+        The most recently computed call output
     """
 
     toRV = {'coe': coe2rv, 'mee': mee2rv}
@@ -40,7 +41,7 @@ class ZonalGravity(ModelAbstract):
         self.Re = Re
         self.mu = mu
         self.elements = elements
-        super().__init__()
+        self.Xdot = np.array([[]])
 
     def __call__(self, T, X):
         """Output indicated element derivatives resulting from zonal gravity.

@@ -5,11 +5,10 @@
 import numpy as np
 import numpy.linalg as npl
 from math import sin, cos, atan2
-from .model_abstract import ModelAbstract
 from ..orbit import diff_elements
 
 
-class LyapunovElementSteering(ModelAbstract):
+class LyapunovElementSteering():
     """
     Lyapunov control for orbital elements, neglecting phase angle.
 
@@ -43,6 +42,8 @@ class LyapunovElementSteering(ModelAbstract):
     Vdot : ndarray
         Most recent Lyapunov function derivative history, mx1 where m is the
         number of samples.
+    Xdot : ndarray
+        The most recently computed call output
     """
 
     def __init__(self, mu, W, a_t, Xref, model, glpe):
@@ -56,7 +57,7 @@ class LyapunovElementSteering(ModelAbstract):
         self.u = np.zeros(())
         self.V = np.zeros(())
         self.Vdot = np.zeros(())
-        super().__init__()
+        self.Xdot = np.array([[]])
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.
