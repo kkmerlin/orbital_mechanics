@@ -75,16 +75,18 @@ class ProportionalElementControl():
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
-            K = np.eye(6)
-            eta_trimmed = np.trim_zeros(np.sort(np.absolute(eta[0:5])))
-            max_exponent = np.max(np.log10(eta_trimmed))
-            try:
-                exponent_5 = max_exponent  # - np.log10(eta[5])
-            except RuntimeWarning:  # if eta[5] is zero
-                exponent_5 = max_exponent
-            K[5, 5] = np.power(10., exponent_5+1)
+            if isinstance(self.K, int):
+                K = np.eye(6)
+                eta_trimmed = np.trim_zeros(np.sort(np.absolute(eta[0:5])))
+                max_exponent = np.max(np.log10(eta_trimmed))
+                try:
+                    exponent_5 = max_exponent - np.log10(eta[5])
+                except RuntimeWarning:  # if eta[5] is zero
+                    exponent_5 = max_exponent
+                K[5, 5] = np.power(10., exponent_5+self.K)
+            else:
+                K = self.K
 
-            # u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ self.K @ eta)
             u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ K @ eta)
             u_norm = npl.norm(u)
             if u_norm > 1.:
