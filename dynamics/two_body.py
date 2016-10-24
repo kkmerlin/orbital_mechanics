@@ -114,7 +114,7 @@ class TwoBody():
         return None
 
     def _rv_dynamics(self, T, X):
-        """MEE dynamics function.
+        """RV dynamics function.
 
         Parameters
         ----------
@@ -131,7 +131,8 @@ class TwoBody():
         # take the 2 norm at each instance in time (across the rows)
         R = X[:, 0:3]
         V = X[:, 3:6]
-        Rnorm = npl.norm(R, 2, 1, True)
+
+        Rnorm = npl.norm(R, axis=1, keepdims=True)
         neg_mu_by_r3 = -self.mu / np.power(Rnorm, 3)
         Neg_mu_by_r3 = (neg_mu_by_r3 * np.ones((1, 1)))
         Vdot = np.multiply(Neg_mu_by_r3, R)
@@ -163,8 +164,8 @@ class TwoBody():
         Y_ref_M = np.tile(self.X0, T.shape)
         Y_ref_M[0:, -1:] = Y_ref_M[0:, -1:] + dM
 
-        Y = orb.M2f(Y_ref_M)
-        return Y
+        self.Y = orb.M2f(Y_ref_M)
+        return self.Y
 
     def _mee_reference(self, T):
         """MEE reference function.
@@ -179,12 +180,13 @@ class TwoBody():
         Y : ndarray
             An mxn array of reference states.
         """
-        print('_mee_reference IS INCOMPLETE!!')
+        Y_COE = self._coe_reference(T)
+        self.Y = orb.coe2mee(Y_COE)
 
-        return None
+        return self.Y
 
     def _rv_reference(self, T):
-        """MEE reference function.
+        """RV reference function.
 
         Parameters
         ----------
@@ -196,9 +198,10 @@ class TwoBody():
         Y : ndarray
             An mxn array of reference states.
         """
-        print('_rv_reference IS INCOMPLETE!!')
+        Y_COE = self._coe_reference(T)
+        self.Y = orb.coe2rv(Y_COE)
 
-        return None
+        return self.Y
 
     def __repr__(self):
         """Printable represenation of the object."""

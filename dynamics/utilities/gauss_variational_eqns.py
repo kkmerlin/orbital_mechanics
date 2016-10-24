@@ -158,11 +158,11 @@ class GaussVariationalEqns():
         for k, x in enumerate(X):
             r = x[0:3].reshape((3, 1))
             v = x[3:6].reshape((3, 1))
-            h = np.cross(r, v)
+            h = np.cross(r, v, axis=0)
 
             i_r = r / npl.norm(r)
             i_h = h / npl.norm(h)
-            i_theta = np.cross(i_h, i_r)
+            i_theta = np.cross(i_h, i_r, axis=0)
 
             G[k][3:6, 0:] = np.concatenate((i_r, i_theta, i_h), 1)
 
