@@ -4,12 +4,18 @@
 """
 
 
+import numpy as np
+
+
 class SystemDynamics():
     """Combines a plant model, control, and perturbations.
 
-    Plant, control, and perturbations are all callables which take inputs
-    (T, X) where T is an mx1 ndarray of sample times and X is an mxn ndarray
-    of sample states.
+    A callable object that combines other callable objects representing a
+    system's model, control, and perturbations. Each of these objects must take
+    inputs (T, X) where T is an mx1 ndarray of sample times and X is an mxn
+    ndarray of sample states. SystemDynamics is callable with the same inputs,
+    and returns the sum of its constituent parts (model, control,
+    perturbations) when called.
 
     Members
     -------
@@ -19,6 +25,8 @@ class SystemDynamics():
         Represents the system control.
     preturbations : callable or list of callables
         Represent perturbations acting on the system.
+    Xdot : ndarray
+        An mxn array of state derivatives
     """
 
     def __init__(self, plant, control=None, perturbations=None):
@@ -26,6 +34,7 @@ class SystemDynamics():
         self.plant = plant
         self.control = control
         self.perturbations = perturbations
+        self.Xdot = np.array()
         super().__init__()
 
     def __call__(self, T, X):
@@ -40,32 +49,18 @@ class SystemDynamics():
 
         Returns
         -------
-        Xdot : ndarray
-            An mxn array of state derivatives
+        self.Xdot
         """
-        Xdot = self.plant(T, X)
+        self.Xdot = self.plant(T, X)
 
         if self.control is not None:
-            Xdot += self.control(T, X)
+            self.Xdot += self.control(T, X)
 
         if self.perturbations is not None:
             if isinstance(self.perturbations, list):
                 for perturb in self.perturbations:
-                    Xdot = Xdot + perturb(T, X)
+                    self.Xdot += perturb(T, X)
             else:
-                Xdot += self.perturbations(T, X)
+                self.Xdot += self.perturbations(T, X)
 
-        self.Xdot = Xdot
-        return Xdot
-
-    def __repr__(self):
-        """Printable represenation of the object."""
-        return 'SystemDynamics({}, {}, {})'.format(
-            self.plant, self.control, self.perturbations)
-
-    def __str__(self):
-        """Human readable represenation of the object."""
-        output = 'SystemDynamics'
-        output += '(plant={}, control={}, perturbations={})'.format(
-            self.plant, self.control, self.perturbations)
-        return output
+        return self.Xdot

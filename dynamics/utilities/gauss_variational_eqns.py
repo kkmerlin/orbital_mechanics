@@ -43,9 +43,9 @@ class GaussVariationalEqns():
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        G_funcs = dict(mee=self._mee,
-                       coe=self._coe,
-                       rv=self._rv)
+        G_funcs = {'mee': self._mee,
+                   'coe': self._coe,
+                   'rv': self._rv}
 
         return G_funcs[self.element_set](X)
 
