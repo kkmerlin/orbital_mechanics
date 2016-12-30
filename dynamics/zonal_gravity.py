@@ -100,7 +100,7 @@ class ZonalGravity():
             w = X[0:, 4:5]
             f = X[0:, 5:6]
 
-            G = GaussVariationalEqns(self.mu).coe(X)
+            G = GaussVariationalEqns(self.mu, 'coe')(X)
 
         elif self.elements is 'mee':
             COE = mee2coe(X)

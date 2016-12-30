@@ -34,7 +34,7 @@ class SystemDynamics():
         self.plant = plant
         self.control = control
         self.perturbations = perturbations
-        self.Xdot = np.array()
+        self.Xdot = np.array([[]])
         super().__init__()
 
     def __call__(self, T, X):

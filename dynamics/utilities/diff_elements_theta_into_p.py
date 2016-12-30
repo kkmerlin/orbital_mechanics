@@ -8,7 +8,7 @@ from ...orbit import diff_elements
 
 def diff_elements_theta_into_p(mu, k, X, X_r, angle_idx=[5]):
     """
-    Augment diff_elements.py by incorporating f error into p Errors.
+    Augment diff_elements.py by incorporating f error into p error.
 
     See diff_elements.py for all other detials.
 

@@ -29,9 +29,9 @@ class ThrustConstant():
             Indicates the set of element time derivatives that will be output.
             Allowable values: coe, mee, rv
         """
-        gve = dict(coe=GaussVariationalEqns(mu).coe,
-                   mee=GaussVariationalEqns(mu).mee,
-                   rv=GaussVariationalEqns(mu).rv)
+        gve = dict(coe=GaussVariationalEqns(mu, 'coe'),
+                   mee=GaussVariationalEqns(mu, 'mee'),
+                   rv=GaussVariationalEqns(mu, 'rv'))
 
         self.vector = vector
         self.gve = gve[elements]
