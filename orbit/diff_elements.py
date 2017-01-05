@@ -9,8 +9,8 @@ def diff_elements(X, X_r, angle_idx=[5]):
     """Calculate element differences X-X_r, and acute differences for angles.
 
     For two sets of element trajectories, the algebraic differences are
-    calculated for non-angle elements. For angle elements, the acute angle
-    between them is given.
+    calculated for non-angle elements. For angle elements, an angular
+    difference on [-pi, pi] is given.
 
     Input
     -----
@@ -33,13 +33,10 @@ def diff_elements(X, X_r, angle_idx=[5]):
     and n is the state dimension.
     """
     mn = X.shape
-    dX = np.zeros(mn)
 
-    for j in range(mn[1]):
-        X_subtraction = X[0:, j] - X_r[0:, j]
-        if j in angle_idx:
-            dX[0:, j] = np.fmod(X_subtraction, 2*np.pi)
-        else:
-            dX[0:, j] = X_subtraction
+    dX = X - X_r
+
+    for j in angle_idx:
+        dX[0:, j] = np.fmod(dX[0:, j], 2*np.pi)
 
     return dX
