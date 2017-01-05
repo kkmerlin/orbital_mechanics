@@ -30,7 +30,7 @@ class Proportional5ElementControl():
         trajectory, X (mxn ndarray), where n is the state dimension defined by
         the Xref.model attribute.
     gve : callable
-        Can be called with input X (mxn ndarray) to produce a list of ndarrays
+        Can be called with input X (mxn ndarray) to produce a 3darray
         representing the Gauss's form of Lagrange's Planetary Equations for
         each passed state.
     u : ndarray

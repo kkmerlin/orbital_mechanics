@@ -32,7 +32,7 @@ class LyapunovElementSteering():
         Can be called with input T (an mx1 ndarray) and X (mxn ndarray)
         to produce state derivatives for this element set.
     gve : callable
-        Can be called with input X (mxn ndarray) to produce a list of ndarrays
+        Can be called with input X (mxn ndarray) to produce a 3darray
         representing the Gauss's form of Lagrange's Planetary Equations for
         each passed state.
     u : ndarray

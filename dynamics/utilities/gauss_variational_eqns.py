@@ -39,15 +39,15 @@ class GaussVariationalEqns():
 
         Output
         ------
-        G : list of ndarray
-        A 6x3 array of each element's time derivative as a result of
+        G : 3darray
+        n 6x3 arrays of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
         G_funcs = {'mee': self._mee,
                    'coe': self._coe,
                    'rv': self._rv}
 
-        return G_funcs[self.element_set](X)
+        return np.array(G_funcs[self.element_set](X))
 
     def _mee(self, X):
         """Gauss Variational Equations for MEEs.

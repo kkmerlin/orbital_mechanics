@@ -11,9 +11,9 @@ from .utilities import GaussVariationalEqns
 from .two_body import TwoBody
 
 
-class ProportionalElementControl():
+class NaaszHallControl():
     """
-    Proportional control for orbital element orbit transfer.
+    Proportional control based on the work of Naasz and Hall, 2002.
 
     Phase angle element must be the last (6th) state listed.
 
@@ -67,24 +67,14 @@ class ProportionalElementControl():
         """
         G = self.gve(X)
         Xref = self.Xref(T)
-        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
+        k = 1e-1
+        Eta = diff_elements_theta_into_p(self.mu, k,
+                                         X, Xref, angle_idx=[2, 3, 4, 5])
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
         for i, eta in enumerate(Eta):
-            if isinstance(self.K, int):
-                K = np.eye(6)
-                eta_trimmed = np.trim_zeros(np.sort(np.absolute(eta[0:5])))
-                max_exponent = np.max(np.log10(eta_trimmed))
-                try:
-                    exponent_5 = max_exponent - np.log10(eta[5])
-                except RuntimeWarning:  # if eta[5] is zero
-                    exponent_5 = max_exponent
-                K[5, 5] = np.power(10., exponent_5+self.K)
-            else:
-                K = self.K
-
-            u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ K @ eta)
+            u = (-1./self.a_t * npl.inv(G[i].T @ G[i]) @ G[i].T @ self.K @ eta)
             u_norm = npl.norm(u)
             if u_norm > 1.:
                 self.u[i] = u / u_norm
