@@ -1,4 +1,6 @@
+from .lyapunov_6element import Lyapunov6Element
 from .lyapunov_element_steering import LyapunovElementSteering
+from .lyapunov_element_sliding_a import LyapunovElementSlidingA
 from .Naasz_Hall_control import NaaszHallControl
 from .proportional_element_control import ProportionalElementControl
 from .proportional_5element_control import Proportional5ElementControl

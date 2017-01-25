@@ -38,5 +38,9 @@ def diff_elements(X, X_r, angle_idx=[5]):
 
     for j in angle_idx:
         dX[0:, j] = np.fmod(dX[0:, j], 2*np.pi)
+        dX[0:, j] = np.array(
+            [a-2*np.pi if a > np.pi else a for a in dX[0:, j]])
+        dX[0:, j] = np.array(
+            [a+2*np.pi if a < -np.pi else a for a in dX[0:, j]])
 
     return dX

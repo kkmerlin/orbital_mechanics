@@ -1,18 +1,20 @@
-"""Created on Wed Sep 08 2015 15:10.
+"""Created on Sun Jan 22 2015 13:31.
 
 @author: Nathan Budd
 """
 import numpy as np
 import numpy.linalg as npl
-from math import sin, cos, atan2
 from ..orbit import diff_elements
 from .two_body import TwoBody
 from .utilities import GaussVariationalEqns
 
 
-class LyapunovElementSteering():
+class LyapunovElementSlidingA():
     """
-    Lyapunov control for orbital elements, neglecting phase angle.
+    Lyapunov control for orbital elements, incorporating phase angle into a
+    sliding semi-major axis that increases/decreases the angular rate to slowly
+    draw the current state not just to the correct orbit, but to the correct
+    angular position in that orbit as well.
 
     Phase angle element must be the last (6th) state listed.
 
@@ -46,13 +48,15 @@ class LyapunovElementSteering():
         number of samples.
     Xdot : ndarray
         The most recently computed call output
-    Eta_last : ndarray
-        The most recently computed element errors
     Xref_last : ndarray
-        The most recently computed reference elements
+        The most recently computed reference trajectory
+    Eta_aug : ndarray
+        The most recently computed element errors
+    k_a0 : float
+        Gain for augmented semi-major axis
     """
 
-    def __init__(self, mu, W, a_t, element_set, X0):
+    def __init__(self, mu, W, a_t, element_set, X0, k_a0):
         """.
 
         Parameters
@@ -72,7 +76,9 @@ class LyapunovElementSteering():
         self.V = np.zeros(())
         self.Vdot = np.zeros(())
         self.Xdot = np.array([[]])
-        self.Eta_last = np.array([[]])
+        self.Xref_last = np.array([[]])
+        self.Eta_aug = np.array([[]])
+        self.k_a0 = k_a0
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.
@@ -83,9 +89,23 @@ class LyapunovElementSteering():
         """
         G = self.gve(X)
         Xref = self.Xref(T)
-        self.Xref_last = Xref
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
-        self.Eta_last = Eta
+
+        # augment target semi-major axis
+        a_t = Xref[:, 0]
+        d_nu = Eta[:, 5]
+        # k_a = 1 + (self.k_a0-1)/np.pi*d_nu
+        k_a_coeff = [1,
+                     0,
+                     3*(self.k_a0-1)/np.pi**2,
+                     2*(1-self.k_a0)/np.pi**3]
+        k_a = (1*k_a_coeff[0] + d_nu*k_a_coeff[1] + d_nu**2*k_a_coeff[2] +
+               d_nu**3*k_a_coeff[3])
+        a_T = a_t# * (1 + d_nu/(k_a*np.pi))
+        Xref_aug = np.array(Xref)
+        Xref_aug[:, 0] = a_T
+        self.Eta_aug = diff_elements(X, Xref_aug, angle_idx=[2, 3, 4, 5])
+        self.Xref_last = Xref_aug
 
         Xdot = self.model(T, X)
         Xrefdot = self.model(T, Xref)
@@ -97,7 +117,7 @@ class LyapunovElementSteering():
         self.Vdot = np.zeros((X.shape[0], 1))
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
-            c = (eta @ self.W @ G[i]).reshape((1, 3))
+            c = (self.Eta_aug[i] @ self.W @ G[i]).reshape((1, 3))
             c_norm = npl.norm(c)
             if c_norm > 1:
                 u = - c.T / c_norm

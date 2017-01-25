@@ -1,4 +1,4 @@
-"""Created on Wed Sep 08 2015 15:10.
+"""Created on Sun Jan 22 2017 16:25.
 
 @author: Nathan Budd
 """
@@ -10,11 +10,10 @@ from .two_body import TwoBody
 from .utilities import GaussVariationalEqns
 
 
-class LyapunovElementSteering():
+class LyapunovPositionVelocity():
     """
-    Lyapunov control for orbital elements, neglecting phase angle.
-
-    Phase angle element must be the last (6th) state listed.
+    Lyapunov control for position-velocity, using a spline trajectory for
+    tracking.
 
     Members
     -------
@@ -46,50 +45,49 @@ class LyapunovElementSteering():
         number of samples.
     Xdot : ndarray
         The most recently computed call output
-    Eta_last : ndarray
-        The most recently computed element errors
-    Xref_last : ndarray
-        The most recently computed reference elements
+    X0 : ndarray
+        See two_body.py for more details.
+    spline_interval : float
+        Interval of time allowed to pass before creating a new spline.
     """
 
-    def __init__(self, mu, W, a_t, element_set, X0):
+    def __init__(self, mu, W, a_t, X0, t_spline):
         """.
 
         Parameters
         ----------
         element_set : string
             See two_body.py for more details.
-        X0 : ndarray
-            See two_body.py for more details.
         """
+        element_set = 'rv'
         self.mu = mu
         self.W = W
         self.a_t = a_t
-        self.Xref = TwoBody(mu, element_set, X0=X0)
+        self.Xref = Xref(mu, element_set, X0=X0)
         self.model = TwoBody(mu, element_set)
         self.gve = GaussVariationalEqns(mu, element_set)
         self.u = np.zeros(())
         self.V = np.zeros(())
         self.Vdot = np.zeros(())
         self.Xdot = np.array([[]])
-        self.Eta_last = np.array([[]])
+        self.spline_interval = spline_interval
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.
 
-        X = [e1 e2 e3 e4 e5 e_phase]
+        X = [rx ry rz vx vy vz]
 
-        See dynamics_abstract.py for more details.
+        See two_body.py for more details.
         """
-        G = self.gve(X)
-        Xref = self.Xref(T)
-        self.Xref_last = Xref
-        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
-        self.Eta_last = Eta
+        # generage splines
+        steps = int(T[-1]/self.spline_interval)
+        spline_starts = [j*spline_interval for j in range(steps)]
 
-        Xdot = self.model(T, X)
-        Xrefdot = self.model(T, Xref)
-        Etadot = Xdot - Xrefdot
+
+        G = self.gve(X)
+        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
+        dr = Eta[:, 0:3]
+        dv = Eta[:, 3:6]
 
         U = np.zeros(X.shape)
         self.u = np.zeros((X.shape[0], 3))
@@ -98,12 +96,7 @@ class LyapunovElementSteering():
         for i, eta in enumerate(Eta):
             # Vdot = c'*u, where u is a unit vector
             c = (eta @ self.W @ G[i]).reshape((1, 3))
-            c_norm = npl.norm(c)
-            if c_norm > 1:
-                u = - c.T / c_norm
-            else:
-                u = -c.T
-            # u = -c.T / c_norm
+            u = - c.T / npl.norm(c)
 
             self.u[i] = u.T
             self.V[i] = eta @ self.W @ eta.T

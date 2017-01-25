@@ -1,18 +1,18 @@
-"""Created on Wed Sep 08 2015 15:10.
+"""Created on Tue Jan 24 2017 13:17.
 
 @author: Nathan Budd
 """
 import numpy as np
 import numpy.linalg as npl
-from math import sin, cos, atan2
 from ..orbit import diff_elements
 from .two_body import TwoBody
 from .utilities import GaussVariationalEqns
 
 
-class LyapunovElementSteering():
+class Lyapunov6Element():
     """
-    Lyapunov control for orbital elements, neglecting phase angle.
+    Lyapunov control for orbital elements, tracking a target with a phase
+    that steps by one orbit every target period.
 
     Phase angle element must be the last (6th) state listed.
 
@@ -46,10 +46,12 @@ class LyapunovElementSteering():
         number of samples.
     Xdot : ndarray
         The most recently computed call output
+    X0 : ndarray
+        See two_body.py for more details.
     Eta_last : ndarray
-        The most recently computed element errors
+        The most recently computed element errors, including modulo 2pi phase
     Xref_last : ndarray
-        The most recently computed reference elements
+        The most recently computed reference trajectory
     """
 
     def __init__(self, mu, W, a_t, element_set, X0):
@@ -59,13 +61,11 @@ class LyapunovElementSteering():
         ----------
         element_set : string
             See two_body.py for more details.
-        X0 : ndarray
-            See two_body.py for more details.
         """
         self.mu = mu
         self.W = W
         self.a_t = a_t
-        self.Xref = TwoBody(mu, element_set, X0=X0)
+        self.X0 = X0
         self.model = TwoBody(mu, element_set)
         self.gve = GaussVariationalEqns(mu, element_set)
         self.u = np.zeros(())
@@ -73,6 +73,7 @@ class LyapunovElementSteering():
         self.Vdot = np.zeros(())
         self.Xdot = np.array([[]])
         self.Eta_last = np.array([[]])
+        self.Xref_last = np.array([[]])
 
     def __call__(self, T, X):
         """Evaluate the control at the given times.
@@ -81,11 +82,23 @@ class LyapunovElementSteering():
 
         See dynamics_abstract.py for more details.
         """
-        G = self.gve(X)
-        Xref = self.Xref(T)
+        # construct step-altering target
+        a_ref = self.X0[0, -1]
+        nu_ref = self.X0[0, 5]
+        period_ref = 2.*np.pi*(a_ref**3 / self.mu)**.5
+        Xref_nu_free = np.ones(T.shape) @ self.X0[0:1, 0:5]
+        phase_factors = [int(t/period_ref) for t in T]
+        Xref_nu = np.array([[nu_ref + 2*np.pi*n for n in phase_factors]]).T
+        Xref = np.concatenate((Xref_nu_free, Xref_nu), axis=1)
         self.Xref_last = Xref
-        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
-        self.Eta_last = Eta
+
+        # or...
+        # Xref = TwoBody(self.mu, 'coea', X0=self.X0)
+
+        # compute errors and controls
+        G = self.gve(X)
+        Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4])
+        self.Eta_last = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])
 
         Xdot = self.model(T, X)
         Xrefdot = self.model(T, Xref)
