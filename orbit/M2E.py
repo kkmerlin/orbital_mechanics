@@ -25,10 +25,18 @@ def M2E(coe_M):
     M = coe_M[0:, -1:]
     E0 = M + np.sign(np.sin(M))*e
     E1 = E0 + 1.
+    max_iterations = 100
+    iterations = 0
 
     while np.max(np.absolute(E1 - E0)) > tol:
         E0 = E1
         E1 = E0 + (M - E0 + e*np.sin(E0)) / (1. - e*np.cos(E0))
+        iterations += 1
+        if iterations > max_iterations:
+            print(
+                'max ({}) iterations reached in M2E. Error: {}'.format(
+                    max_iterations, np.max(np.absolute(E1 - E0))))
+            break
 
     coe_E = np.concatenate((coe_M[0:, 0:-1], E1), 1)
     return coe_E
