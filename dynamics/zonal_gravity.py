@@ -5,7 +5,6 @@
 import numpy as np
 import numpy.linalg as npl
 from ..orbit import coe2rv
-from ..orbit import coea2rv
 from ..orbit import mee2rv
 from ..orbit import mee2coe
 from ..orbit import euler_sequence
@@ -28,12 +27,12 @@ class ZonalGravity():
         Standard gravitational parameter. Defaults to canonical units.
     elements : string
         Indicates the element set being used as input and output. Allowable
-        values include: 'coe', 'coea', 'mee'. Defaults to 'coe'.
+        values include: 'coe', 'mee'. Defaults to 'coe'.
     Xdot : ndarray
         The most recently computed call output
     """
 
-    toRV = {'coe': coe2rv, 'coea': coea2rv, 'mee': mee2rv}
+    toRV = {'coe': coe2rv, 'mee': mee2rv}
 
     def __init__(self, ord=2, Re=1., mu=1., elements='coe'):
         """."""
@@ -95,7 +94,7 @@ class ZonalGravity():
             a_eci = a_eci + np.concatenate((a_x, a_y, a_z), 1) * factor
 
         # create rotation matrices and Gauss-Lagrange matrices
-        if self.elements in ['coe', 'coea']:
+        if self.elements in ['coe']:
             i = X[0:, 2:3]
             W = X[0:, 3:4]
             w = X[0:, 4:5]

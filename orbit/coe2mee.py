@@ -12,7 +12,7 @@ def coe2mee(COE, mu=1.):
     Parameters
     ----------
     COE : ndarray
-        mx6 array of elements ordered as [p e i W w nu].
+        mx6 array of elements ordered as [a e i W w nu].
     mu : float
         Standard gravitational parameter. Defaults to canonical units.
 
@@ -22,12 +22,14 @@ def coe2mee(COE, mu=1.):
         mx6 array of elements ordered as [p f g h k L].
     """
 
-    p = COE[0:, 0:1]
+    a = COE[0:, 0:1]
     e = COE[0:, 1:2]
     i = COE[0:, 2:3]
     W = COE[0:, 3:4]
     w = COE[0:, 4:5]
     nu = COE[0:, 5:6]
+
+    p = a * (1 - e**2)
 
     # x,y components of eccentricity vector
     f = e * np.cos(w + W)

@@ -1,6 +1,5 @@
 from .coe2mee import coe2mee
 from .coe2rv import coe2rv
-from .coea2rv import coea2rv
 from .diff_elements import diff_elements
 from .E2f import E2f
 from .E2M import E2M

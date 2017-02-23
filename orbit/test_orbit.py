@@ -81,9 +81,9 @@ class TestOrbit(unittest.TestCase):
         self.assertTrue((np.fabs(MEE_diff) < tol).all())
 
     def test_coe2mee2coe(self):
-        tol = 1e-14
+        tol = 1e-13
 
-        m = 10000
+        m = 100
         p = npr.rand(m, 1) * 10
         e = npr.rand(m, 1)
         i = npr.rand(m, 1) * np.pi
@@ -97,6 +97,7 @@ class TestOrbit(unittest.TestCase):
 
         COE_diff = diff_elements(COE_1, COE_2, angle_idx=[2, 3, 4, 5])
         print(COE_diff)
+        print(max(np.fabs(COE_diff).flat))
 
         self.assertTrue((np.fabs(COE_diff) < tol).all())
 
@@ -191,7 +192,7 @@ class TestOrbit(unittest.TestCase):
     def test_M2E2M(self):
         tol = 1e-9
 
-        m = 10000
+        m = 100
         p = npr.rand(m, 1) * 10
         e = npr.rand(m, 1)
         i = npr.rand(m, 1) * np.pi
@@ -206,5 +207,6 @@ class TestOrbit(unittest.TestCase):
 
         RV_diff = diff_elements(COE_M0, COE_M1, angle_idx=[2, 3, 4, 5])
         print(RV_diff)
+        print(max(np.fabs(RV_diff).flat))
 
         self.assertTrue((np.fabs(RV_diff) < tol).all())

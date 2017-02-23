@@ -19,7 +19,7 @@ def mee2coe(MEE, mu=1.):
     Returns
     -------
     COE : ndarray
-        mx6 array of elements ordered as [p e i W w f].
+        mx6 array of elements ordered as [a e i W w f].
     """
 
     p = MEE[0:, 0:1]
@@ -38,6 +38,9 @@ def mee2coe(MEE, mu=1.):
     # eccentricity
     e = (f**2 + g**2)**.5
 
+    # semi-major axis
+    a = p / (1 - e**2)
+
     # argument of periapsis
     w_bar = np.mod(np.arctan2(g, f), 2*np.pi)
 
@@ -46,4 +49,4 @@ def mee2coe(MEE, mu=1.):
     # true anomaly
     f = np.mod(L - w_bar, 2*np.pi)
 
-    return np.concatenate((p, e, i, W, w, f), 1)
+    return np.concatenate((a, e, i, W, w, f), 1)

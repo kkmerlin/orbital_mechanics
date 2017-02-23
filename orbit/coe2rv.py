@@ -14,7 +14,7 @@ def coe2rv(COE, mu=1.):
     Parameters
     ----------
     COE : ndarray
-        mx6 array of elements ordered as [p e i W w f].
+        mx6 array of elements ordered as [a e i W w f].
     mu : float
         Standard gravitational parameter. Defaults to canonical units.
 

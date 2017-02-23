@@ -45,7 +45,7 @@ class GaussVariationalEqns():
         """
         G_funcs = {'mee': self._mee,
                    'coe': self._coe,
-                   'coea': self._coea,
+                   'coef0': self._coef0,
                    'rv': self._rv}
 
         return np.array(G_funcs[self.element_set](X))
@@ -96,7 +96,7 @@ class GaussVariationalEqns():
         Input
         -----
         X : ndarray
-        Time history array (mx6) of COE [p e i W w f], where
+        Time history array (mx6) of COE [a e i W w f], where
         m is the number of samples.
 
         Output
@@ -107,7 +107,7 @@ class GaussVariationalEqns():
         """
         G = [np.zeros((6, 3)) for x in X]
         for k, x in enumerate(X):
-            p = x[0]
+            a = x[0]
             e = x[1]
             i = x[2]
             W = x[3]
@@ -120,19 +120,18 @@ class GaussVariationalEqns():
             ct = cos(f + w)
             si = sin(i)
             ci = cos(i)
-            a = p / (1. - e**2)
+            p = a * (1. - e**2)
             r = p / (1. + e*cf)
             h = (self.mu * p)**.5
 
             adot = np.array([e*sf, p/r, 0.]) * 2*a**2/h
             edot = np.array([p*sf, (p+r)*cf + r*e, 0.]) / h
-            pdot = adot*(1-e**2) - 2*a*e*edot
             idot = np.array([0., 0., r*ct/h])
             Wdot = np.array([0., 0., r*st/h/si])
             wdot = np.array([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
             fdot = np.array([p*cf, -(p+r)*sf, 0.]) / h / e
 
-            G[k][0] = pdot
+            G[k][0] = adot
             G[k][1] = edot
             G[k][2] = idot
             G[k][3] = Wdot
@@ -140,13 +139,13 @@ class GaussVariationalEqns():
             G[k][5] = fdot
         return G
 
-    def _coea(self, X):
-        """Gauss Variational Equations for COEs.
+    def _coef0(self, X):
+        """Gauss Variational Equations for COE parameter using f0.
 
         Input
         -----
         X : ndarray
-        Time history array (mx6) of COE [a e i W w f], where
+        Time history array (mx6) of COE [a e i W w f0], where
         m is the number of samples.
 
         Output
