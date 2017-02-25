@@ -54,10 +54,12 @@ class TwoBody():
             An mxn array of state derivatives or reference states
         """
         dyn_funcs = dict(coe=self._coe_dynamics,
+                         coeM0=self._coeM0_dynamics,
                          mee=self._mee_dynamics,
                          rv=self._rv_dynamics)
 
         ref_funcs = dict(coe=self._coe_reference,
+                         coeM0=self._coeM0_reference,
                          mee=self._mee_reference,
                          rv=self._rv_reference)
 
@@ -94,6 +96,23 @@ class TwoBody():
         self.Y[:, -1] = f_dot
 
         return self.Y
+
+    def _coeM0_dynamics(self, T, X):
+        """COE with M0 dynamics function.
+
+        Parameters
+        ----------
+        T : ndarray
+            An mx1 column array of sample times.
+        X : ndarray
+            An mxn array of states.
+
+        Outputs
+        -------
+        Y : ndarray
+            An mxn array of state derivatives
+        """
+        return np.zeros(X.shape)
 
     def _mee_dynamics(self, T, X):
         """MEE dynamics function.
@@ -166,6 +185,21 @@ class TwoBody():
 
         self.Y = orb.M2f(Y_ref_M)
         return self.Y
+
+    def _coeM0_reference(self, T):
+        """COE with M0 reference function.
+
+        Parameters
+        ----------
+        T : ndarray
+            An mx1 column array of sample times.
+
+        Outputs
+        -------
+        Y : ndarray
+            An mxn array of reference states.
+        """
+        return np.tile(self.X0, T.shape)
 
     def _mee_reference(self, T):
         """MEE reference function.

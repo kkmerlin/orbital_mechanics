@@ -11,13 +11,13 @@ def M2E(coe_M):
     Input
     -----
     coe_M : ndarray
-    mx6 array of classical orbital elements [p e i W w M]. m is the number
+    mx6 array of classical orbital elements [a e i W w M]. m is the number
     of samples and 6 is the dimension of the element set.
 
     Output
     ------
     coe_E : ndarray
-    mx6 array of classical orbital elements [p e i W w E]. m is the number
+    mx6 array of classical orbital elements [a e i W w E]. m is the number
     of samples and 6 is the dimension of the element set.
     """
     tol = 1e-14

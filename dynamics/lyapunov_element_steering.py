@@ -81,7 +81,7 @@ class LyapunovElementSteering():
 
         See dynamics_abstract.py for more details.
         """
-        G = self.gve(X)
+        G = self.gve(X, T)
         Xref = self.Xref(T)
         self.Xref_last = Xref
         Eta = diff_elements(X, Xref, angle_idx=[2, 3, 4, 5])

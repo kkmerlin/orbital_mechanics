@@ -5,6 +5,7 @@
 import numpy as np
 import numpy.linalg as npl
 from math import cos, sin
+from orbital_mechanics import orbit
 
 
 class GaussVariationalEqns():
@@ -28,14 +29,16 @@ class GaussVariationalEqns():
         self.mu = mu
         self.element_set = element_set
 
-    def __call__(self, X):
-        """Gauss Variational Equations
+    def __call__(self, X, T=None):
+        """Gauss Variational Equations.
 
         Input
         -----
         X : ndarray
         Time history array (mx6) of elements, where
         m is the number of samples.
+        T : ndarray
+        Vector of times (mx1)
 
         Output
         ------
@@ -45,12 +48,12 @@ class GaussVariationalEqns():
         """
         G_funcs = {'mee': self._mee,
                    'coe': self._coe,
-                   'coef0': self._coef0,
+                   'coeM0': self._coeM0,
                    'rv': self._rv}
 
-        return np.array(G_funcs[self.element_set](X))
+        return np.array(G_funcs[self.element_set](X, T))
 
-    def _mee(self, X):
+    def _mee(self, X, T=None):
         """Gauss Variational Equations for MEEs.
 
         Input
@@ -90,7 +93,7 @@ class GaussVariationalEqns():
             G[i] = np.array([pdot, fdot, gdot, hdot, kdot, Ldot]) * rt_p_mu
         return G
 
-    def _coe(self, X):
+    def _coe(self, X, T=None):
         """Gauss Variational Equations for COEs.
 
         Input
@@ -139,14 +142,16 @@ class GaussVariationalEqns():
             G[k][5] = fdot
         return G
 
-    def _coef0(self, X):
+    def _coeM0(self, X, T):
         """Gauss Variational Equations for COE parameter using f0.
 
         Input
         -----
         X : ndarray
-        Time history array (mx6) of COE [a e i W w f0], where
+        Time history array (mx6) of COE [a e i W w M0], where
         m is the number of samples.
+        T : ndarray
+        Vector of times (mx1)
 
         Output
         ------
@@ -154,22 +159,28 @@ class GaussVariationalEqns():
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        G = [np.zeros((6, 3)) for x in X]
+        a = X[:, 0:1]
+        M0 = X[:, -1:]
+        M = M0 + (self.mu / a**3)**.5 * T
+        X_with_M = np.concatenate((X[:, 0:-1], M), axis=1)
+
+        G = [np.zeros((6, 3)) for x in orbit.M2f(X_with_M)]
         for k, x in enumerate(X):
-            p = x[0]
+            a = x[0]
             e = x[1]
             i = x[2]
             W = x[3]
             w = x[4]
             f = x[5]
 
+            b = a * (1 - e**2)**.5
             sf = sin(f)
             cf = cos(f)
             st = sin(f + w)
             ct = cos(f + w)
             si = sin(i)
             ci = cos(i)
-            a = p / (1. - e**2)
+            p = a * (1. - e**2)
             r = p / (1. + e*cf)
             h = (self.mu * p)**.5
 
@@ -178,14 +189,15 @@ class GaussVariationalEqns():
             idot = np.array([0., 0., r*ct/h])
             Wdot = np.array([0., 0., r*st/h/si])
             wdot = np.array([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
-            fdot = np.array([p*cf, -(p+r)*sf, 0.]) / h / e
+            Mdot_minus_n = b/(a*h*e) * np.array([p*cf-w*r*e, -(p+r)*sf, 0.])
+            M0dot = Mdot_minus_n + 3/2*(self.mu/a**5)**.5 * adot * T[k]
 
             G[k][0] = adot
             G[k][1] = edot
             G[k][2] = idot
             G[k][3] = Wdot
             G[k][4] = wdot
-            G[k][5] = fdot
+            G[k][5] = M0dot
         return G
 
     def _rv(self, X):

@@ -11,13 +11,13 @@ def E2f(coe_E):
     Input
     -----
     coe_E : ndarray
-    mx6 array of classical orbital elements [p e i W w E]. m is the number
+    mx6 array of classical orbital elements [a e i W w E]. m is the number
     of samples and 6 is the dimension of the element set.
 
     Output
     ------
     coe_f : ndarray
-    mx6 array of classical orbital elements [p e i W w f]. m is the number
+    mx6 array of classical orbital elements [a e i W w f]. m is the number
     of samples and 6 is the dimension of the element set.
     """
     e = coe_E[0:, 1:2]
