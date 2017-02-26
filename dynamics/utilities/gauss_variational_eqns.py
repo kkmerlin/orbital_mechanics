@@ -159,12 +159,7 @@ class GaussVariationalEqns():
         A 6x3 array of each element's time derivative as a result of
         disturbances in the r, theta, and angular momentum directions.
         """
-        a = X[:, 0:1]
-        M0 = X[:, -1:]
-        M = M0 + (self.mu / a**3)**.5 * T
-        X_with_M = np.concatenate((X[:, 0:-1], M), axis=1)
-
-        G = [np.zeros((6, 3)) for x in orbit.M2f(X_with_M)]
+        G = [np.zeros((6, 3)) for x in orbit.coeM02coe(X, T)]
         for k, x in enumerate(X):
             a = x[0]
             e = x[1]
@@ -189,7 +184,7 @@ class GaussVariationalEqns():
             idot = np.array([0., 0., r*ct/h])
             Wdot = np.array([0., 0., r*st/h/si])
             wdot = np.array([-p*cf/e, (p+r)*sf/e, -r*st*ci/si]) / h
-            Mdot_minus_n = b/(a*h*e) * np.array([p*cf-w*r*e, -(p+r)*sf, 0.])
+            Mdot_minus_n = np.array([p*cf-2*r*e, -(p+r)*sf, 0.]) * b/(a*h*e)
             M0dot = Mdot_minus_n + 3/2*(self.mu/a**5)**.5 * adot * T[k]
 
             G[k][0] = adot

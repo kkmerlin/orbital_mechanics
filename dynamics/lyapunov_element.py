@@ -99,7 +99,6 @@ class LyapunovElement():
                 u = - c.T / c_norm
             else:
                 u = -c.T
-            # u = -c.T / c_norm
 
             self.u[i] = u.T
             self.V[i] = eta @ self.W @ eta.T
