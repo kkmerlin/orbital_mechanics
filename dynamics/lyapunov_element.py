@@ -10,11 +10,9 @@ from .two_body import TwoBody
 from .utilities import GaussVariationalEqns
 
 
-class LyapunovElementSteering():
+class LyapunovElement():
     """
     Lyapunov control for orbital elements, neglecting phase angle.
-
-    Phase angle element must be the last (6th) state listed.
 
     Members
     -------
@@ -77,9 +75,7 @@ class LyapunovElementSteering():
     def __call__(self, T, X):
         """Evaluate the control at the given times.
 
-        X = [e1 e2 e3 e4 e5 e_phase]
-
-        See dynamics_abstract.py for more details.
+        X = [e1 e2 e3 e4 e5 e_6]
         """
         G = self.gve(X, T)
         Xref = self.Xref(T)
