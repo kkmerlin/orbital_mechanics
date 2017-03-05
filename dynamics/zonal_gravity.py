@@ -4,10 +4,7 @@
 """
 import numpy as np
 import numpy.linalg as npl
-from ..orbit import coe2rv
-from ..orbit import mee2rv
-from ..orbit import mee2coe
-from ..orbit import euler_sequence
+import orbital_mechanics.orbit as orb
 from .utilities import GaussVariationalEqns
 from multiplot2d import MultiPlotter
 
@@ -32,7 +29,7 @@ class ZonalGravity():
         The most recently computed call output
     """
 
-    toRV = {'coe': coe2rv, 'mee': mee2rv}
+    toRV = {'coe': orb.coe2rv, 'mee': orb.mee2rv}
 
     def __init__(self, ord=2, Re=1., mu=1., elements='coe'):
         """."""
@@ -48,7 +45,12 @@ class ZonalGravity():
 
         See dynamics_abstract.py for more details.
         """
-        RV = self.toRV[self.elements](X)
+        if self.elements == 'coeM0':
+            RV = orb.coeM02rv(X, T)
+        elif self.elements != 'rv':
+            RV = self.toRV[self.elements](X)
+        else:
+            RV = X
 
         x = RV[0:, 0:1]
         y = RV[0:, 1:2]
@@ -102,16 +104,24 @@ class ZonalGravity():
 
             G = GaussVariationalEqns(self.mu, 'coe')(X)
 
+        elif self.elements in ['coeM0']:
+            i = X[0:, 2:3]
+            W = X[0:, 3:4]
+            w = X[0:, 4:5]
+            f = orb.coeM02coe(X, T)[0:, 5:6]
+
+            G = GaussVariationalEqns(self.mu, 'coeM0')(X, T)
+
         elif self.elements is 'mee':
-            COE = mee2coe(X)
+            COE = orb.mee2coe(X)
             i = COE[0:, 2:3]
             W = COE[0:, 3:4]
             w = COE[0:, 4:5]
             f = COE[0:, 5:6]
 
-            G = GaussLagrangePlanetaryEqns(self.mu).mee(X)
+            G = GaussVariationalEqns(self.mu, 'mee')(X)
 
-        C = euler_sequence([3, 1, 3], W, i, w+f)
+        C = orb.euler_sequence([3, 1, 3], W, i, w+f)
 
         # rotate ECI accelerations into the LVLH frame
         a_lvlh = np.zeros(a_eci.shape)
@@ -135,7 +145,7 @@ class ZonalGravity():
         return 'ZonalGravity(J={}, Re={}, mu={}, elements={})'.format(
             self.J, self.Re, self.mu, self.elements)
 
-    def hamiltonian(self, T, X):
+    def hamiltonian(self, T, X, make_plot=True):
         """
         Calculate the jacobi integral to check conservation of energy.
 
@@ -151,7 +161,10 @@ class ZonalGravity():
         energy : ndarray
             mx1 array of energies at each sample point.
         """
-        RV = self.toRV[self.elements](X)
+        if self.elements == 'coeM0':
+            RV = orb.coeM02rv(X, T)
+        else:
+            RV = self.toRV[self.elements](X)
 
         z = RV[0:, 2:3]
         r = npl.norm(RV[0:, 0:3], ord=2, axis=1).reshape(z.shape)
@@ -190,10 +203,11 @@ class ZonalGravity():
         H_rel = (H - H[0, 0]) / H[0, 0]
 
         # plot
-        plot = MultiPlotter(1, name="Zonal Gravity Hamiltonian",
-                            size_inches=(10, 10))
-        plot.add_data(0, T, H_rel)
-        plot.set_axis_titles(0, 'time', 'total energy')
-        plot.display()
+        if make_plot:
+            plot = MultiPlotter(1, name="Zonal Gravity Hamiltonian",
+                                size_inches=(10, 10))
+            plot.add_data(0, T, H_rel)
+            plot.set_axis_titles(0, 'time', 'total energy')
+            plot.display()
 
         return H

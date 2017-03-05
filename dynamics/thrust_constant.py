@@ -29,12 +29,8 @@ class ThrustConstant():
             Indicates the set of element time derivatives that will be output.
             Allowable values: coe, mee, rv
         """
-        gve = dict(coe=GaussVariationalEqns(mu, 'coe'),
-                   mee=GaussVariationalEqns(mu, 'mee'),
-                   rv=GaussVariationalEqns(mu, 'rv'))
-
         self.vector = vector
-        self.gve = gve[elements]
+        self.gve = GaussVariationalEqns(mu, elements)
         self.Xdot = np.array([[]])
 
     def __call__(self, T, X):
@@ -42,7 +38,7 @@ class ThrustConstant():
 
         See dynamics_abstract.py for more details.
         """
-        Gs = self.gve(X)
+        Gs = self.gve(X, T)
 
         Xdot = np.zeros(X.shape)
         for i, G in enumerate(Gs):

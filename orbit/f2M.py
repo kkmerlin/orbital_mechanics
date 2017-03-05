@@ -2,9 +2,8 @@
 
 @author: Nathan Budd
 """
-import numpy as np
-from .M2E import M2E
-from .E2f import E2f
+from .f2E import f2E
+from .E2M import E2M
 
 
 def f2M(coe_f):
@@ -23,4 +22,4 @@ def f2M(coe_f):
     of samples and 6 is the dimension of the element set.
     """
     coe_E = f2E(coe_f)
-    return E2m(coe_E)
+    return E2M(coe_E)

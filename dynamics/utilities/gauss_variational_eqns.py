@@ -143,24 +143,24 @@ class GaussVariationalEqns():
         return G
 
     def _coeM0(self, X, T):
-        """Gauss Variational Equations for COE parameter using f0.
+        """Gauss Variational Equations for COE parameter using M0.
 
         Input
         -----
         X : ndarray
-        Time history array (mx6) of COE [a e i W w M0], where
-        m is the number of samples.
+            Time history array (mx6) of COE [a e i W w M0], where
+            m is the number of samples.
         T : ndarray
-        Vector of times (mx1)
+            Vector of times (mx1)
 
         Output
         ------
         G : 3darray
-        A 6x3 array of each element's time derivative as a result of
-        disturbances in the r, theta, and angular momentum directions.
+            A 6x3 array of each element's time derivative as a result of
+            disturbances in the r, theta, and angular momentum directions.
         """
-        G = [np.zeros((6, 3)) for x in orbit.coeM02coe(X, T)]
-        for k, x in enumerate(X):
+        G = [np.zeros((6, 3)) for x in X]
+        for k, x in enumerate(orbit.coeM02coe(X, T)):
             a = x[0]
             e = x[1]
             i = x[2]
