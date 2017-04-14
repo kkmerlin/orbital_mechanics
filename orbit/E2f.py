@@ -23,5 +23,5 @@ def E2f(coe_E):
     e = coe_E[0:, 1:2]
     E = coe_E[0:, -1:]
     tan_f_by_2 = ((1.+e)/(1.-e))**.5 * np.tan(E/2)
-    f = 2 * np.arctan(tan_f_by_2)
+    f = np.mod(2 * np.arctan(tan_f_by_2), 2*np.pi)
     return np.concatenate((coe_E[0:, 0:-1], f), 1)

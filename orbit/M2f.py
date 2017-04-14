@@ -2,7 +2,6 @@
 
 @author: Nathan Budd
 """
-import numpy as np
 from .M2E import M2E
 from .E2f import E2f
 

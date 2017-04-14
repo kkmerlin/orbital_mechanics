@@ -1,2 +1,2 @@
-# orbit
-Collection of orbital element operations that can be executed on batches of states
+This project is no longer active.
+Its successor can be found here: https://github.com/lasr/orbital_elements

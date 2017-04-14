@@ -27,6 +27,6 @@ def coe2coeM0(COE, T, mu=1.):
     M = COEM[:, 5:6]
 
     n = (mu / a**3)**0.5
-    M0 = M - n*T
+    M0 = np.mod(M - n*T, 2*np.pi)
 
     return np.concatenate((COE[:, 0:-1], M0), axis=1)

@@ -38,5 +38,5 @@ def M2E(coe_M):
                     max_iterations, np.max(np.absolute(E1 - E0))))
             break
 
-    coe_E = np.concatenate((coe_M[0:, 0:-1], E1), 1)
+    coe_E = np.concatenate((coe_M[0:, 0:-1], np.mod(E1, 2*np.pi)), 1)
     return coe_E

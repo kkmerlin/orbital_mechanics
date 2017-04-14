@@ -195,7 +195,7 @@ class GaussVariationalEqns():
             G[k][5] = M0dot
         return G
 
-    def _rv(self, X):
+    def _rv(self, X, T):
         """Gauss Variational Equations for RV.
 
         Input

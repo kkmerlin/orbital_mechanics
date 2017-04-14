@@ -23,6 +23,6 @@ def E2M(coe_E):
     e = coe_E[0:, 1:2]
     E = coe_E[0:, -1:]
 
-    M = E - e*np.sin(E)
+    M = np.mod(E - e*np.sin(E), 2*np.pi)
 
     return np.concatenate((coe_E[0:, 0:-1], M), 1)
